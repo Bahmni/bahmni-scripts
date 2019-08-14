@@ -1,5 +1,5 @@
 
-GITHUB_URL="https://raw.githubusercontent.com/Bahmni/bahmni-scripts/master/deletePatientData"
+GITHUB_URL="https://raw.githubusercontent.com/Bahmni/bahmni-scripts/master/deletePatientData/0.92"
 
 OPENMRS_SQL_FILE="deletePatientDataForOpenMRS.sql"
 OPENELIS_SQL_FILE="deletePatientDataForOpenElis.sql"
