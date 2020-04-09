@@ -13,6 +13,7 @@ OPENMRS_SQL_FILE="openmrs_backup.sql"
 BAHMNIPACS_SQL_FILE="bahmni_pacs_backup.sql"
 PACSDB_SQL_FILE="pacsdb_backup.sql"
 DEST_LOCATION="/home/centos/dbRestore"
+OPENMRS_DB_NAME="openmrs"
 OPENELIS_DB_NAME="clinlims"
 ODOO_DB_NAME="odoo"
 BAHMNIPACS_DB_NAME="bahmni_pacs"
@@ -38,30 +39,30 @@ download_and_unzip(){
 restore(){
 	echo "Restoring the database"
 	bahmni -i local stop
-	mysql -u$SQLUSER -p$PASSWORD -e "drop database openmrs"
-	mysql -u$SQLUSER -p$PASSWORD -e "create database openmrs"
-	mysql -u$SQLUSER -p$PASSWORD openmrs < $DEST_LOCATION/$OPENMRS_SQL_FILE
+	mysql -u$SQLUSER -p$PASSWORD -e "drop database $OPENMRS_DB_NAME"
+	mysql -u$SQLUSER -p$PASSWORD -e "create database $OPENMRS_DB_NAME"
+	mysql -u$SQLUSER -p$PASSWORD $OPENMRS_DB_NAME < $DEST_LOCATION/$OPENMRS_SQL_FILE
 	mysql -u$SQLUSER -p$PASSWORD -e "FLUSH PRIVILEGES"
 
 	ps aux | grep -ie $OPENELIS_DB_NAME | awk '{print $2}' | xargs kill -9
-	psql -U$PSQLUSER -c "drop database if exists clinlims;"
-	psql -U$PSQLUSER -c "create database clinlims;"
+	psql -U$PSQLUSER -c "drop database if exists $OPENELIS_DB_NAME;"
+	psql -U$PSQLUSER -c "create database $OPENELIS_DB_NAME;"
 	psql -U$CLINLIMSUSER $OPENELIS_DB_NAME < $DEST_LOCATION/$OPENELIS_SQL_FILE
 
 	ps aux | grep -ie $ODOO_DB_NAME | awk '{print $2}' | xargs kill -9
-	psql -U$PSQLUSER -c  "drop database if exists odoo;"
-	psql -U$PSQLUSER -c  "create database odoo;"
+	psql -U$PSQLUSER -c  "drop database if exists $ODOO_DB_NAME;"
+	psql -U$PSQLUSER -c  "create database $ODOO_DB_NAME;"
 	psql -U$ODOOUSER $ODOO_DB_NAME < $DEST_LOCATION/$ODOO_SQL_FILE
-	psql -U$ODOOUSER -c "ALTER DATABASE $ODOOUSER OWNER TO $ODOOUSER;"
+	psql -U$ODOOUSER -c "ALTER DATABASE $ODOO_DB_NAME OWNER TO $ODOOUSER;"
 
 	ps aux | grep -ie $BAHMNIPACS_DB_NAME | awk '{print $2}' | xargs kill -9
-	psql -U$PSQLUSER -c  "drop database if exists bahmni_pacs;"
-	psql -U$PSQLUSER -c  "create database bahmni_pacs;"
+	psql -U$PSQLUSER -c  "drop database if exists $BAHMNIPACS_DB_NAME;"
+	psql -U$PSQLUSER -c  "create database $BAHMNIPACS_DB_NAME;"
 	psql -U$PACSUSER $BAHMNIPACS_DB_NAME < $DEST_LOCATION/$BAHMNIPACS_SQL_FILE
 
         ps aux | grep -ie $PACS_DB_NAME | awk '{print $2}' | xargs kill -9
-	psql -U$PSQLUSER -c  "drop database if exists pacsdb;"
-	psql -U$PSQLUSER -c  "create database pacsdb;"
+	psql -U$PSQLUSER -c  "drop database if exists $PACS_DB_NAME;"
+	psql -U$PSQLUSER -c  "create database $PACS_DB_NAME;"
 	psql -U$PACSSUER $PACS_DB_NAME < $DEST_LOCATION/$PACSDB_SQL_FILE	
 
 	bahmni -i local start	
