@@ -1,0 +1,5 @@
+patientProfileFileName: target/output/registrations.csv
+contactProfileFileName: target/output/encounters.csv
+registrationIndexStartPoint: 1011
+patientRegistrationStartDay: "2014-02-11"
+regInitial: GAN
