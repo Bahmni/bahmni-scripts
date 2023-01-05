@@ -8,14 +8,14 @@ on:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
     paths:
-      - .github/workflows/build_publish_configdb.yaml
+      - .github/workflows/build_publish_clinic_config_db.yaml
       - demo/db-backups/1.0.0-lite/*
 
   workflow_dispatch:
-    
+
 jobs:
-  build-publish-docker:
-    name: Build & Publish Docker Image
+  mysql5.7:
+    name: Build with MySQL5.7
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -33,13 +33,28 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: demo/db-backups/1.0.0-lite/package/docker/configdb.mysql5.7.Dockerfile
+          file: demo/db-backups/1.0.0-lite/docker/configdb.mysql5.7.Dockerfile
           push: true
           tags: bahmni/openmrs-db:mysql5.7-${{env.ARTIFACT_VERSION}},bahmni/openmrs-db:clinic-config-mysql5.7
+  mysql5.6:
+    name: Build with MySQL5.6
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set env.ARTIFACT_VERSION
+        run: |
+          wget -q https://raw.githubusercontent.com/Bahmni/bahmni-infra-utils/main/setArtifactVersion.sh && chmod +x setArtifactVersion.sh
+          ./setArtifactVersion.sh
+          rm setArtifactVersion.sh
+      - name: Docker - Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
       - name: Docker - Build and push with mysql 5.6
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: demo/db-backups/1.0.0-lite/package/docker/configdb.mysql5.6.Dockerfile
+          file: demo/db-backups/1.0.0-lite/docker/configdb.mysql5.6.Dockerfile
           push: true
           tags: bahmni/openmrs-db:mysql5.6-${{env.ARTIFACT_VERSION}},bahmni/openmrs-db:clinic-config-mysql5.6
