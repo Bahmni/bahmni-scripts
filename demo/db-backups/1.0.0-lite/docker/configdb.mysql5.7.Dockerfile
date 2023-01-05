@@ -1,6 +1,6 @@
 FROM mysql:5.7
 
-RUN yum update && \
+RUN yum update -y && \
     yum install -y \
     unzip \
     gzip
