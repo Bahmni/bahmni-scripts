@@ -9,7 +9,7 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+'
     paths:
       - .github/workflows/build_publish_clinic_config_db.yaml
-      - demo/db-backups/1.0.0-lite/*
+      - demo/db-backups/1.0.0-lite/**
 
   workflow_dispatch:
 
