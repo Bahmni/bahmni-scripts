@@ -32,7 +32,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: demo/db-backups/1.0.0-lite/docker/configdb.mysql5.7.Dockerfile
+          file: demo/db-backups/1.0.0-lite/mysql5.7/Dockerfile
           push: true
           tags: bahmni/openmrs-db:mysql5.7-${{env.ARTIFACT_VERSION}},bahmni/openmrs-db:clinic-config-mysql5.7
   mysql5-6:
@@ -54,6 +54,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: demo/db-backups/1.0.0-lite/docker/configdb.mysql5.6.Dockerfile
+          file: demo/db-backups/1.0.0-lite/mysql5.6/Dockerfile
           push: true
           tags: bahmni/openmrs-db:mysql5.6-${{env.ARTIFACT_VERSION}},bahmni/openmrs-db:clinic-config-mysql5.6
