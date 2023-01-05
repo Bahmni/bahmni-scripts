@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  mysql5.7:
+  mysql5-7:
     name: Build with MySQL5.7
     runs-on: ubuntu-latest
     steps:
@@ -36,7 +36,7 @@ jobs:
           file: demo/db-backups/1.0.0-lite/docker/configdb.mysql5.7.Dockerfile
           push: true
           tags: bahmni/openmrs-db:mysql5.7-${{env.ARTIFACT_VERSION}},bahmni/openmrs-db:clinic-config-mysql5.7
-  mysql5.6:
+  mysql5-6:
     name: Build with MySQL5.6
     runs-on: ubuntu-latest
     steps:
