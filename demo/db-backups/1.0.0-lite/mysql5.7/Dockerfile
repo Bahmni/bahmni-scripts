@@ -6,7 +6,7 @@ RUN yum update -y && \
     gzip
 
 # Copy configuration_checksums & DB Backup
-COPY demo/db-backups/1.0.0-lite/resources/*  .
+COPY demo/db-backups/1.0.0-lite/mysql5.7/resources/*  .
 
 RUN unzip configuration_checksums.zip && \
     gunzip -c omrs*.gz > /docker-entrypoint-initdb.d/omrs_db_backup.sql && \
