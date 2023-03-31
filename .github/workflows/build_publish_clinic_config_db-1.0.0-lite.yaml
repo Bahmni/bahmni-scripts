@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - BAH-2950
     paths:
       - .github/workflows/build_publish_clinic_config_db-1.0.0-lite.yaml
       - demo/db-backups/1.0.0-lite/**
