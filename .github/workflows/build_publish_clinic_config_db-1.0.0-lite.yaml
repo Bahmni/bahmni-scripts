@@ -3,13 +3,10 @@ on:
   push:
     branches:
       - master
-      - 'release-*'
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
+      - BAH-2950
     paths:
-      - .github/workflows/build_publish_clinic_config_db.yaml
+      - .github/workflows/build_publish_clinic_config_db-1.0.0-lite.yaml
       - demo/db-backups/1.0.0-lite/**
-
   workflow_dispatch:
 
 env:
