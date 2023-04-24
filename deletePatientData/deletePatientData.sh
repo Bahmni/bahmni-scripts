@@ -2,7 +2,7 @@
 bash .env
 
 OMRS_DB_ContainerName=bahmni-lite-openmrsdb-1
-OPENELIS_DB_ContainerName=bahmni-standard-odoodb-1
+OPENELIS_DB_ContainerName=bahmni-standard-openelisdb-1
 ODOO_DB_ContainerName=bahmni-standard-odoodb-1
 CRATER_DB_ContainerName=bahmni-lite-craterdb-1
 
