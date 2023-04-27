@@ -1,6 +1,6 @@
 #!/bin/sh
-bash .env
-
+# Importing variable value from .env file in docker
+. ./.env
 OMRS_DB_ContainerName=bahmni-lite-openmrsdb-1
 OPENELIS_DB_ContainerName=bahmni-standard-openelisdb-1
 ODOO_DB_ContainerName=bahmni-standard-odoodb-1
