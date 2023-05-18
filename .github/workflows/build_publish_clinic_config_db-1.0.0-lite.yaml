@@ -21,6 +21,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      - name: Unzip Configuration Checksums
+        run: cd demo/db-backups/1.0.0-lite/mysql5.7/resources && unzip configuration_checksums.zip
       - name: Docker - Build and push with mysql 5.7
         uses: docker/build-push-action@v3
         with:
@@ -39,6 +41,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      - name: Unzip Configuration Checksums
+        run: cd demo/db-backups/1.0.0-lite/mysql5.6/resources && unzip configuration_checksums.zip
       - name: Docker - Build and push with mysql 5.6
         uses: docker/build-push-action@v3
         with:
