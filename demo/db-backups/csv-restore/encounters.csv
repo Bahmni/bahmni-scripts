@@ -1,0 +1,498 @@
+Registration Number,encounterType,visitType,Patient.Name,Patient.AGE,Patient.Gender,Visit Start Date,Visit End Date,Repeat.1.EncounterDate,Repeat.1.Obs.History and Examination.History and Examination Notes,Repeat.1.Diagnosis.1
+GAN10010,Consultation,OPD,SUSHILA TALANDI,18,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10011,Consultation,OPD,YOGANDHARA KAMBLE,19,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10012,Consultation,OPD,MEERA PUNGATI,20,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10013,Consultation,OPD,SURESH PODADI,21,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10014,Consultation,OPD,SHANTABAI MISAL,22,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10015,Consultation,OPD,ANITA SHARMA,23,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10016,Consultation,OPD,NANUBAI GORLA,24,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10017,Consultation,OPD,BURHA TALANAI,25,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10018,Consultation,OPD,LALITA PARSA,26,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10019,Consultation,OPD,SUNITA Agarwal,27,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10020,Consultation,OPD,LALITA Ahuja,28,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10021,Consultation,OPD,ASHA Arora,29,F,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10022,Consultation,OPD,VIPASHA Bajaj,30,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10023,Consultation,OPD,VIMLA Balakrishnan,31,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10024,Consultation,OPD,YOGENDRA Bhatia,32,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10025,Consultation,OPD,SHAILENDRA Bhattacharya,33,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10026,Consultation,OPD,AMITENDRA Chakraborty,34,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10027,Consultation,OPD,AMITENDRA Chandra,35,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10028,Consultation,OPD,SHAM Chatterjee,36,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10029,Consultation,OPD,RAM Chaudhary,37,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10030,Consultation,OPD,SHYAM Chawla,38,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10031,Consultation,OPD,AMIT Chopra,39,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10032,Consultation,OPD,SUMIT Das,40,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10033,Consultation,OPD,SUMEET Datta,41,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10034,Consultation,OPD,KETAN Deb,42,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10035,Consultation,OPD,CHETAN Desai,43,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10036,Consultation,OPD,MOHIT Dhawan,44,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10037,Consultation,OPD,SOHIT Dhillon,45,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10038,Consultation,OPD,MEHUL Doshi,46,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10039,Consultation,OPD,Aarav Dutta,47,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10040,Consultation,OPD,Abhinav Eswar,48,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10041,Consultation,OPD,Aditya Garg,49,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10042,Consultation,OPD,Ajay Ghosh,50,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10043,Consultation,OPD,Akash Goel,51,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10044,Consultation,OPD,Alok Goyal,52,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10045,Consultation,OPD,Amar Gupta,53,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10046,Consultation,OPD,Amit Iyer,54,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10047,Consultation,OPD,Anand Jain,55,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10048,Consultation,OPD,Anil Jaiswal,56,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10049,Consultation,OPD,Ankur Jha,57,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10050,Consultation,OPD,Anuj Joshi,58,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10051,Consultation,OPD,Arjun Kadam,59,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10052,Consultation,OPD,Ashok Kapoor,60,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10053,Consultation,OPD,Atul Kapoor,61,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10054,Consultation,OPD,Ayush Khanna,62,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10055,Consultation,OPD,Bhavya Khatri,63,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10056,Consultation,OPD,Chirag Khatri,64,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10057,Consultation,OPD,Danish Krishnan,65,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10058,Consultation,OPD,Deepak Kumar,66,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10059,Consultation,OPD,Dev Kulkarni,67,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10060,Consultation,OPD,Dhiraj Lal,68,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10061,Consultation,OPD,Gaurav Madan,69,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10062,Consultation,OPD,Gautam Mahajan,70,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10063,Consultation,OPD,Harish Malhotra,71,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10064,Consultation,OPD,Hemant Malik,72,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10065,Consultation,OPD,Hitesh Mehta,73,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10066,Consultation,OPD,Ishaan Menon,74,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10067,Consultation,OPD,Jai Mishra,75,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10068,Consultation,OPD,Karan Modi,18,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10069,Consultation,OPD,Kunal Mohan,19,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10070,Consultation,OPD,Lokesh Mukherjee,20,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10071,Consultation,OPD,Madhav Nair,21,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10072,Consultation,OPD,Manish Nanda,22,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10073,Consultation,OPD,Mohan Padmanabhan,23,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10074,Consultation,OPD,Mukesh Pandey,24,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10075,Consultation,OPD,Naveen Patel,25,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10076,Consultation,OPD,Nikhil Paul,26,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10077,Consultation,OPD,Nitin Puri,27,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10078,Consultation,OPD,Omkar Rana,28,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10079,Consultation,OPD,Pankaj Rao,29,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10080,Consultation,OPD,Prakash Reddy,30,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10081,Consultation,OPD,Pranav Sahu,31,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10082,Consultation,OPD,Rahul Saini,32,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10083,Consultation,OPD,Rajat Samuel,33,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10084,Consultation,OPD,Rajesh Sen,34,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10085,Consultation,OPD,Rakesh Sethi,35,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10086,Consultation,OPD,Ravi Shah,36,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10087,Consultation,OPD,Rohan Sharma,37,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10088,Consultation,OPD,Sachin Shukla,38,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10089,Consultation,OPD,Sameer Singh,39,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10090,Consultation,OPD,Sandeep Sinha,40,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10091,Consultation,OPD,Sanjay Sood,41,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10092,Consultation,OPD,Sarthak Srinivasan,42,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10093,Consultation,OPD,Shashank Srivastava,43,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10094,Consultation,OPD,Siddharth Subramanian,44,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10095,Consultation,OPD,Sunil Talwar,45,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10096,Consultation,OPD,Suresh Thakkar,46,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10097,Consultation,OPD,Tarun Thakur,47,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10098,Consultation,OPD,Utkarsh Tiwari,48,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10099,Consultation,OPD,Varun Trivedi,49,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10100,Consultation,OPD,Vicky Vaidya,50,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10101,Consultation,OPD,Vijay Varma,51,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10102,Consultation,OPD,Vikram Verma,52,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10103,Consultation,OPD,Vishal Yadav,53,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10104,Consultation,OPD,Vivek Zaveri,54,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10105,Consultation,OPD,Yash Abraham,55,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10106,Consultation,OPD,Aakriti Almeida,56,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10107,Consultation,OPD,Aditi Anto,57,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10108,Consultation,OPD,Aishwarya Apte,58,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10109,Consultation,OPD,Akanksha Bhat,59,F,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10110,Consultation,OPD,Alia Cariappa,60,F,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10112,Consultation,OPD,Ananya Devarajan,62,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10113,Consultation,OPD,Anika Dube,63,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10114,Consultation,OPD,Ankita Fernandes,64,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10115,Consultation,OPD,Anushka Francis,65,F,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10116,Consultation,OPD,Aparna Gavaskar,66,F,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10117,Consultation,OPD,Archana George,67,F,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10118,Consultation,OPD,Bhavna Gomes,68,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10119,Consultation,OPD,Chitra Iqbal,69,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10120,Consultation,OPD,Damini Jacob,70,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10121,Consultation,OPD,Deepika Kapoor,71,F,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10122,Consultation,OPD,Divya Khatri,72,F,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10123,Consultation,OPD,Esha Lobo,73,F,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10124,Consultation,OPD,Garima Machado,74,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10125,Consultation,OPD,Gayatri Mathew,75,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10126,Consultation,OPD,Gita Menon,18,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10127,Consultation,OPD,Harini Merchant,19,F,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10128,Consultation,OPD,Ishita Mistry,20,F,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10129,Consultation,OPD,Jyoti Morarji,21,F,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10130,Consultation,OPD,Kajal Mukadam,22,F,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10131,Consultation,OPD,Kavya Nair,23,F,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10132,Consultation,OPD,Khushi Oommen,24,F,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10133,Consultation,OPD,Kirti Pais,25,F,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10134,Consultation,OPD,Komal Panicker,26,F,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10135,Consultation,OPD,Kruti Pinto,27,F,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10136,Consultation,OPD,Lata Quadros,28,F,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10137,Consultation,OPD,Madhu Rajan,29,F,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10138,Consultation,OPD,Mahima Rodrigues,30,F,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10139,Consultation,OPD,Meera Saldanha,31,F,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10140,Consultation,OPD,Mitali Sequeira,32,F,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10141,Consultation,OPD,Monika Shahane,33,F,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10142,Consultation,OPD,Muskaan Shetty,34,F,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10143,Consultation,OPD,Naina Soman,35,F,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10144,Consultation,OPD,Namrata Suri,36,F,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10145,Consultation,OPD,Nidhi Surti,37,F,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10146,Consultation,OPD,Nisha Talwar,38,F,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10147,Consultation,OPD,Pooja Thakkar,39,F,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10148,Consultation,OPD,Prachi Trivedi,40,F,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10149,Consultation,OPD,Preeti Ullal,41,F,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10150,Consultation,OPD,Priya Varghese,42,F,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10151,Consultation,OPD,Rachana Venkatesh,43,F,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10152,Consultation,OPD,Radhika Xavier,44,F,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10153,Consultation,OPD,Rashi Zachariah,45,F,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10154,Consultation,OPD,Ritu Agarwal,46,F,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10155,Consultation,OPD,Riya Ahuja,47,F,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10156,Consultation,OPD,Sakshi Arora,48,F,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10157,Consultation,OPD,Saloni Bajaj,49,F,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10158,Consultation,OPD,Samira Balakrishnan,50,F,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10159,Consultation,OPD,Sangeeta Bhatia,51,F,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10160,Consultation,OPD,Sanjana Bhattacharya,52,F,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10161,Consultation,OPD,Sapna Chakraborty,53,F,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10162,Consultation,OPD,Sarika Chandra,54,F,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10163,Consultation,OPD,Shikha Chatterjee,55,F,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10164,Consultation,OPD,Simran Chaudhary,56,F,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10165,Consultation,OPD,Sneha Chawla,57,F,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10166,Consultation,OPD,Suman Chopra,58,F,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10167,Consultation,OPD,Swara Das,59,F,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10168,Consultation,OPD,Tanvi Datta,60,F,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10169,Consultation,OPD,Tina Deb,61,F,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10170,Consultation,OPD,Trisha Desai,62,F,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10171,Consultation,OPD,Twinkle Dhawan,63,F,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10172,Consultation,OPD,Urvashi Dhillon,64,F,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10173,Consultation,OPD,Vaishali Doshi,65,F,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10174,Consultation,OPD,Vandana Dutta,66,F,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10175,Consultation,OPD,Varsha Eswar,67,F,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10176,Consultation,OPD,Veena Garg,68,F,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10177,Consultation,OPD,Vibha Ghosh,69,F,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10178,Consultation,OPD,Vidya Goel,70,F,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10179,Consultation,OPD,Vishakha Goyal,71,F,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10180,Consultation,OPD,Yashasvi Gupta,72,F,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10181,Consultation,OPD,Rajat Iyer,73,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10182,Consultation,OPD,Rajesh Jain,74,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10183,Consultation,OPD,Rakesh Jaiswal,75,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10184,Consultation,OPD,Ravi Jha,18,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10185,Consultation,OPD,Rohan Joshi,19,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10186,Consultation,OPD,Sachin Kadam,20,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10187,Consultation,OPD,Sameer Kapoor,21,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10188,Consultation,OPD,Sandeep Khanna,22,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10189,Consultation,OPD,Sanjay Khanna,23,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10190,Consultation,OPD,Sarthak Khatri,24,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10191,Consultation,OPD,Shashank Khatri,25,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10192,Consultation,OPD,Siddharth Krishnan,26,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10193,Consultation,OPD,Sunil Kumar,27,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10194,Consultation,OPD,Suresh Kulkarni,28,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10195,Consultation,OPD,Tarun Lal,29,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10196,Consultation,OPD,Utkarsh Madan,30,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10197,Consultation,OPD,Varun Mahajan,31,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10198,Consultation,OPD,Vicky Malhotra,32,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10199,Consultation,OPD,Vijay Malik,33,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10200,Consultation,OPD,Vikram Mehta,34,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10201,Consultation,OPD,Vishal Menon,35,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10202,Consultation,OPD,Vivek Mishra,36,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10203,Consultation,OPD,Yash Modi,37,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10204,Consultation,OPD,Aakriti Mohan,38,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10205,Consultation,OPD,Aditi Mukherjee,39,F,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10206,Consultation,OPD,Aishwarya Nair,40,F,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10207,Consultation,OPD,Akanksha Nanda,41,F,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10208,Consultation,OPD,Alia Padmanabhan,42,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10209,Consultation,OPD,Amrita Pandey,43,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10210,Consultation,OPD,Ananya Patel,44,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10211,Consultation,OPD,Anika Paul,45,F,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10212,Consultation,OPD,Ankita Puri,46,F,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10213,Consultation,OPD,Anushka Rana,47,F,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10214,Consultation,OPD,Aparna Rao,48,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10215,Consultation,OPD,Archana Reddy,49,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10216,Consultation,OPD,Bhavna Sahu,50,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10217,Consultation,OPD,Chitra Saini,51,F,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10218,Consultation,OPD,Damini Samuel,52,F,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10219,Consultation,OPD,Deepika Sen,53,F,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10220,Consultation,OPD,Divya Sethi,54,F,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10221,Consultation,OPD,Esha Shah,55,F,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10222,Consultation,OPD,Garima Sharma,56,F,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10223,Consultation,OPD,Gayatri Shukla,57,F,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10224,Consultation,OPD,Gita Singh,58,F,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10225,Consultation,OPD,Harini Sinha,59,F,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10226,Consultation,OPD,Ishita Sood,60,F,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10227,Consultation,OPD,Jyoti Srinivasan,61,F,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10228,Consultation,OPD,Kajal Srivastava,62,F,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10229,Consultation,OPD,Kavya Subramanian,63,F,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10230,Consultation,OPD,Khushi Talwar,64,F,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10231,Consultation,OPD,Kirti Thakkar,65,F,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10232,Consultation,OPD,Komal Thakur,66,F,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10233,Consultation,OPD,Kruti Tiwari,67,F,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10234,Consultation,OPD,Lata Trivedi,68,F,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10235,Consultation,OPD,Madhu Vaidya,69,F,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10236,Consultation,OPD,Mahima Varma,70,F,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10237,Consultation,OPD,Meera Verma,71,F,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10238,Consultation,OPD,Mitali Yadav,72,F,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10239,Consultation,OPD,Rajat Zaveri,73,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10240,Consultation,OPD,Rajesh Abraham,74,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10241,Consultation,OPD,Rakesh Almeida,75,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10242,Consultation,OPD,Ravi Anto,18,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10243,Consultation,OPD,Rohan Apte,19,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10244,Consultation,OPD,Sachin Bhat,20,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10245,Consultation,OPD,Sameer Cariappa,21,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10247,Consultation,OPD,Sanjay Devarajan,23,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10248,Consultation,OPD,Sarthak Dube,24,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10249,Consultation,OPD,Shashank Fernandes,25,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10250,Consultation,OPD,Siddharth Francis,26,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10251,Consultation,OPD,Sunil Gavaskar,27,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10252,Consultation,OPD,Suresh George,28,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10253,Consultation,OPD,Tarun Gomes,29,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10254,Consultation,OPD,Utkarsh Iqbal,30,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10255,Consultation,OPD,Varun Jacob,31,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10256,Consultation,OPD,Vicky Kapoor,32,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10257,Consultation,OPD,Vijay Khatri,33,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10258,Consultation,OPD,Vikram Lobo,34,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10259,Consultation,OPD,Vishal Machado,35,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10260,Consultation,OPD,Vivek Mathew,36,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10261,Consultation,OPD,Yash Menon,37,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10262,Consultation,OPD,Aakriti Merchant,38,F,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10263,Consultation,OPD,Aditi Mistry,39,F,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10264,Consultation,OPD,Aishwarya Morarji,40,F,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10265,Consultation,OPD,Akanksha Mukadam,41,F,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10266,Consultation,OPD,Alia Nair,42,F,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10267,Consultation,OPD,Amrita Oommen,43,F,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10268,Consultation,OPD,Ananya Pais,44,F,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10269,Consultation,OPD,Anika Panicker,45,F,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10270,Consultation,OPD,Ankita Pinto,46,F,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10271,Consultation,OPD,Anushka Quadros,47,F,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10272,Consultation,OPD,Aparna Rajan,48,F,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10273,Consultation,OPD,Archana Rodrigues,49,F,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10274,Consultation,OPD,Bhavna Saldanha,50,F,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10275,Consultation,OPD,Chitra Sequeira,51,F,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10276,Consultation,OPD,Damini Shahane,52,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10277,Consultation,OPD,Deepika Shetty,53,F,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10278,Consultation,OPD,Divya Soman,54,F,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10279,Consultation,OPD,Esha Suri,55,F,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10280,Consultation,OPD,Garima Surti,56,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10281,Consultation,OPD,Gayatri Talwar,57,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10282,Consultation,OPD,Gita Thakkar,58,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10283,Consultation,OPD,Harini Trivedi,59,F,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10284,Consultation,OPD,Ishita Ullal,60,F,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10285,Consultation,OPD,Jyoti Varghese,61,F,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10286,Consultation,OPD,Kajal Venkatesh,62,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10287,Consultation,OPD,Kavya Xavier,63,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10288,Consultation,OPD,Khushi Zachariah,64,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10289,Consultation,OPD,Kirti Devarajan,65,F,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10290,Consultation,OPD,Komal Dube,66,F,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10291,Consultation,OPD,Kruti Fernandes,67,F,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10292,Consultation,OPD,Lata Francis,68,F,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10293,Consultation,OPD,Madhu Gavaskar,69,F,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10294,Consultation,OPD,Mahima George,70,F,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10295,Consultation,OPD,Meera Gomes,71,F,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10296,Consultation,OPD,Mitali Iqbal,72,F,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10297,Consultation,OPD,Ayush Jacob,73,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10298,Consultation,OPD,Bhavya Kapoor,74,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10299,Consultation,OPD,Chirag Khatri,75,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10300,Consultation,OPD,Danish Lobo,18,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10301,Consultation,OPD,Deepak Machado,19,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10302,Consultation,OPD,Dev Mathew,20,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10303,Consultation,OPD,Dhiraj Menon,21,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10304,Consultation,OPD,Gaurav Merchant,22,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10305,Consultation,OPD,Gautam Mistry,23,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10306,Consultation,OPD,Harish Morarji,24,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10307,Consultation,OPD,Hemant Mukadam,25,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10308,Consultation,OPD,Hitesh Nair,26,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10309,Consultation,OPD,Ishaan Oommen,27,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10310,Consultation,OPD,Jai Pais,28,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10311,Consultation,OPD,Karan Panicker,29,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10312,Consultation,OPD,Kunal Pinto,30,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10313,Consultation,OPD,Lokesh Quadros,31,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10314,Consultation,OPD,Madhav Rajan,32,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10315,Consultation,OPD,Manish Rodrigues,33,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10316,Consultation,OPD,Mohan Saldanha,34,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10317,Consultation,OPD,Mukesh Sequeira,35,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10318,Consultation,OPD,Naveen Chakraborty,36,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10319,Consultation,OPD,Nikhil Chandra,37,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10320,Consultation,OPD,Nitin Chatterjee,38,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10321,Consultation,OPD,Omkar Chaudhary,39,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10322,Consultation,OPD,Pankaj Chawla,40,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10323,Consultation,OPD,Prakash Chopra,41,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10324,Consultation,OPD,Pranav Das,42,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10325,Consultation,OPD,Rahul Datta,43,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10326,Consultation,OPD,Rajat Deb,44,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10327,Consultation,OPD,Rajesh Desai,45,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10328,Consultation,OPD,Rakesh Dhawan,46,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10329,Consultation,OPD,Ravi Dhillon,47,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10330,Consultation,OPD,Rohan Doshi,48,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10331,Consultation,OPD,Sachin Dutta,49,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10332,Consultation,OPD,Sameer Eswar,50,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10333,Consultation,OPD,Sandeep Garg,51,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10334,Consultation,OPD,Sanjay Ghosh,52,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10335,Consultation,OPD,Sarthak Goel,53,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10336,Consultation,OPD,Shashank Goyal,54,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10337,Consultation,OPD,Siddharth Gupta,55,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10338,Consultation,OPD,Sunil Iyer,56,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10339,Consultation,OPD,Suresh Jain,57,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10340,Consultation,OPD,Tarun Jaiswal,58,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10341,Consultation,OPD,Utkarsh Jha,59,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10342,Consultation,OPD,Varun Joshi,60,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10343,Consultation,OPD,Vicky Kadam,61,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10344,Consultation,OPD,Vijay Kapoor,62,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10345,Consultation,OPD,Vikram Khanna,63,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10346,Consultation,OPD,Vishal Khanna,64,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10347,Consultation,OPD,Vivek Khatri,65,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10348,Consultation,OPD,Yash Khatri,66,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10349,Consultation,OPD,Aakriti Krishnan,67,F,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10350,Consultation,OPD,Aditi Kumar,68,F,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10351,Consultation,OPD,Aishwarya Kulkarni,69,F,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10352,Consultation,OPD,Akanksha Lal,70,F,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10353,Consultation,OPD,Alia Madan,71,F,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10354,Consultation,OPD,Amrita Mahajan,72,F,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10355,Consultation,OPD,Ayush Malhotra,73,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10356,Consultation,OPD,Bhavya Malik,74,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10357,Consultation,OPD,Chirag Mehta,75,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10358,Consultation,OPD,Danish Menon,18,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10359,Consultation,OPD,Deepak Mishra,19,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10360,Consultation,OPD,Dev Modi,20,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10361,Consultation,OPD,Dhiraj Mohan,21,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10362,Consultation,OPD,Gaurav Mukherjee,22,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10363,Consultation,OPD,Gautam Nair,23,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10364,Consultation,OPD,Harish Nanda,24,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10365,Consultation,OPD,Hemant Padmanabhan,25,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10366,Consultation,OPD,Hitesh Pandey,26,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10367,Consultation,OPD,Ishaan Patel,27,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10368,Consultation,OPD,Jai Paul,28,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10369,Consultation,OPD,Karan Puri,29,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10370,Consultation,OPD,Kunal Rana,30,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10371,Consultation,OPD,Lokesh Rao,31,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10372,Consultation,OPD,Madhav Reddy,32,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10373,Consultation,OPD,Manish Sahu,33,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10374,Consultation,OPD,Mohan Saini,34,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10375,Consultation,OPD,Mukesh Samuel,35,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10376,Consultation,OPD,Naveen Sen,36,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10377,Consultation,OPD,Nikhil Sethi,37,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10378,Consultation,OPD,Nitin Shah,38,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10379,Consultation,OPD,Omkar Sharma,39,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10380,Consultation,OPD,Pankaj Shukla,40,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10381,Consultation,OPD,Prakash Singh,41,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10382,Consultation,OPD,Pranav Sinha,42,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10383,Consultation,OPD,Rahul Sood,43,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10384,Consultation,OPD,Rajat Srinivasan,44,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10385,Consultation,OPD,Rajesh Srivastava,45,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10386,Consultation,OPD,Rakesh Subramanian,46,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10387,Consultation,OPD,Ravi Talwar,47,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10388,Consultation,OPD,Rohan Thakkar,48,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10389,Consultation,OPD,Sachin Thakur,49,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10390,Consultation,OPD,Sameer Tiwari,50,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10391,Consultation,OPD,Sandeep Trivedi,51,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10392,Consultation,OPD,Sanjay Vaidya,52,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10393,Consultation,OPD,Sarthak Chakraborty,53,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10394,Consultation,OPD,Shashank Chandra,54,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10395,Consultation,OPD,Siddharth Chatterjee,55,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10396,Consultation,OPD,Sunil Chaudhary,56,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10397,Consultation,OPD,Suresh Chawla,57,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10398,Consultation,OPD,Tarun Chopra,58,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10399,Consultation,OPD,Utkarsh Das,59,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10400,Consultation,OPD,Varun Datta,60,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10401,Consultation,OPD,Vicky Deb,61,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10402,Consultation,OPD,Vijay Desai,62,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10403,Consultation,OPD,Vikram Dhawan,63,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10404,Consultation,OPD,Vishal Dhillon,64,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10405,Consultation,OPD,Vivek Doshi,65,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10406,Consultation,OPD,Yash Dutta,66,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10407,Consultation,OPD,Aakriti Eswar,67,F,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10408,Consultation,OPD,Aditi Garg,68,F,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10409,Consultation,OPD,Aishwarya Ghosh,69,F,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10410,Consultation,OPD,Akanksha Goel,70,F,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10411,Consultation,OPD,Alia Goyal,71,F,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10412,Consultation,OPD,Amrita Gupta,72,F,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10413,Consultation,OPD,VIPASHA Iyer,73,F,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10414,Consultation,OPD,VIMLA Jain,74,F,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10415,Consultation,OPD,YOGENDRA Jaiswal,75,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10416,Consultation,OPD,SHAILENDRA Jha,18,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10417,Consultation,OPD,AMITENDRA Joshi,19,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10418,Consultation,OPD,AMITENDRA Kadam,20,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10419,Consultation,OPD,SHAM Kapoor,21,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10420,Consultation,OPD,RAM Khanna,22,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10421,Consultation,OPD,SHYAM Khanna,23,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10422,Consultation,OPD,AMIT Khatri,24,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10423,Consultation,OPD,SUMIT Khatri,25,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10424,Consultation,OPD,SUMEET Krishnan,26,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10425,Consultation,OPD,KETAN Kumar,27,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10426,Consultation,OPD,CHETAN Kulkarni,28,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10427,Consultation,OPD,MOHIT Lal,29,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10428,Consultation,OPD,SOHIT Madan,30,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10429,Consultation,OPD,MEHUL Mahajan,31,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10430,Consultation,OPD,Aarav Malhotra,32,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10431,Consultation,OPD,Abhinav Malik,33,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10432,Consultation,OPD,Aditya Mehta,34,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10433,Consultation,OPD,Ajay Menon,35,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10434,Consultation,OPD,Akash Mishra,36,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10435,Consultation,OPD,Alok Modi,37,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10436,Consultation,OPD,Amar Mohan,38,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10437,Consultation,OPD,Amit Mukherjee,39,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10438,Consultation,OPD,Anand Nair,40,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10439,Consultation,OPD,Anil Nanda,41,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10440,Consultation,OPD,Ankur Padmanabhan,42,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10441,Consultation,OPD,Anuj Pandey,43,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10442,Consultation,OPD,Arjun Patel,44,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10443,Consultation,OPD,Ashok Paul,45,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10444,Consultation,OPD,Atul Puri,46,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10445,Consultation,OPD,Ayush Rana,47,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10446,Consultation,OPD,Bhavya Rao,48,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10447,Consultation,OPD,Chirag Reddy,49,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10448,Consultation,OPD,Danish Sahu,50,M,2023-4-17,2023-4-17,2023-4-17,Severe headache with dizziness,Hypertension
+GAN10449,Consultation,OPD,Deepak Saini,51,M,2023-4-17,2023-4-17,2023-4-17,Nausea w/ vomiting,Viral Infection
+GAN10450,Consultation,OPD,Dev Samuel,52,M,2023-4-17,2023-4-17,2023-4-17,Shortness of breath,Asthma
+GAN10451,Consultation,OPD,Dhiraj Sen,53,M,2023-4-17,2023-4-17,2023-4-17,Fever,Viral Infection
+GAN10452,Consultation,OPD,Gaurav Sethi,54,M,2023-4-17,2023-4-17,2023-4-17,Fatigue,"Hyperthyroidism, NOS"
+GAN10453,Consultation,OPD,Gautam Shah,55,M,2023-4-17,2023-4-17,2023-4-17,Polyuria,"Diabetes mellitus, type 2"
+GAN10454,Consultation,OPD,Harish Sharma,56,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10455,Consultation,OPD,Hemant Shukla,57,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10456,Consultation,OPD,Hitesh Singh,58,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10457,Consultation,OPD,Ishaan Sinha,59,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10458,Consultation,OPD,Jai Sood,60,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10459,Consultation,OPD,Karan Srinivasan,61,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10460,Consultation,OPD,Kunal Srivastava,62,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10461,Consultation,OPD,Lokesh Subramanian,63,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10462,Consultation,OPD,Madhav Talwar,64,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10463,Consultation,OPD,Manish Thakkar,65,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10464,Consultation,OPD,Mohan Thakur,66,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10465,Consultation,OPD,Mukesh Tiwari,67,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10466,Consultation,OPD,Naveen Trivedi,68,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10467,Consultation,OPD,Nikhil Vaidya,69,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10468,Consultation,OPD,Nitin Chakraborty,70,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10469,Consultation,OPD,Omkar Chandra,71,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10470,Consultation,OPD,VIPASHA Chatterjee,72,F,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10471,Consultation,OPD,VIMLA Chaudhary,73,F,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10472,Consultation,OPD,YOGENDRA Chawla,74,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10473,Consultation,OPD,SHAILENDRA Chopra,75,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10474,Consultation,OPD,AMITENDRA Das,18,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10475,Consultation,OPD,AMITENDRA Datta,19,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10476,Consultation,OPD,SHAM Deb,20,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10477,Consultation,OPD,RAM Desai,21,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10478,Consultation,OPD,SHYAM Dhawan,22,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10479,Consultation,OPD,AMIT Dhillon,23,M,2023-6-12,2023-6-12,2023-6-12,Nausea w/ vomiting,Viral Infection
+GAN10480,Consultation,OPD,SUMIT Doshi,24,M,2023-6-12,2023-6-12,2023-6-12,Shortness of breath,Asthma
+GAN10481,Consultation,OPD,SUMEET Dutta,25,M,2023-6-12,2023-6-12,2023-6-12,Fever,Viral Infection
+GAN10482,Consultation,OPD,KETAN Eswar,26,M,2023-6-12,2023-6-12,2023-6-12,Fatigue,"Hyperthyroidism, NOS"
+GAN10483,Consultation,OPD,CHETAN Garg,27,M,2023-6-12,2023-6-12,2023-6-12,Polyuria,"Diabetes mellitus, type 2"
+GAN10484,Consultation,OPD,MOHIT Ghosh,28,M,2023-6-12,2023-6-12,2023-6-12,Severe headache with dizziness,Hypertension
+GAN10485,Consultation,OPD,SOHIT Goel,29,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10486,Consultation,OPD,MEHUL Goyal,30,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10487,Consultation,OPD,Aarav Gupta,31,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10488,Consultation,OPD,Abhinav Iyer,32,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10489,Consultation,OPD,Aditya Jain,33,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10490,Consultation,OPD,Ajay Jaiswal,34,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10491,Consultation,OPD,Akash Jha,35,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10492,Consultation,OPD,Alok Joshi,36,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10493,Consultation,OPD,Amar Kadam,37,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10494,Consultation,OPD,Amit Kapoor,38,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10495,Consultation,OPD,Anand Kapoor,39,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10496,Consultation,OPD,Anil Khanna,40,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10497,Consultation,OPD,Ankur Khatri,41,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10498,Consultation,OPD,Anuj Khatri,42,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10499,Consultation,OPD,Arjun Krishnan,43,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10500,Consultation,OPD,Ashok Kumar,44,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10501,Consultation,OPD,Atul Kulkarni,45,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10502,Consultation,OPD,Ayush Lal,46,M,2023-8-2,2023-8-2,2023-8-2,Severe headache with dizziness,Hypertension
+GAN10503,Consultation,OPD,Bhavya Madan,47,M,2023-8-2,2023-8-2,2023-8-2,Nausea w/ vomiting,Viral Infection
+GAN10504,Consultation,OPD,Chirag Mahajan,48,M,2023-8-2,2023-8-2,2023-8-2,Shortness of breath,Asthma
+GAN10505,Consultation,OPD,Danish Malhotra,49,M,2023-8-2,2023-8-2,2023-8-2,Fever,Viral Infection
+GAN10506,Consultation,OPD,Deepak Malik,50,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
+GAN10507,Consultation,OPD,Dev Mehta,51,M,2023-8-2,2023-8-2,2023-8-2,Polyuria,"Diabetes mellitus, type 2"
+GAN10508,Consultation,OPD,Dhiraj Menon,52,M,2023-8-2,2023-8-2,2023-8-2,Fatigue,"Hyperthyroidism, NOS"
