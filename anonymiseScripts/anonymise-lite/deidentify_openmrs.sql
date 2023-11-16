@@ -128,7 +128,7 @@ SET
 -- Bahmni customized
 --
 -- identifiers (Assumes patient_identifier have been TRUNCATEd)
-CREATE TABLE temp_patient_identifier_old(patient_id int, identifier varchar(256), PRIMARY KEY(patient_id));
+CREATE TABLE temp_patient_identifier_old(patient_id int, identifier varchar(256));
 INSERT INTO
     temp_patient_identifier_old
 SELECT
