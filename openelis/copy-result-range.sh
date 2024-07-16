@@ -1,4 +1,10 @@
 #!/bin/sh
+
+# The script imports result range data from a CSV file into a PostgreSQL table (result_limits). It retrieves item_id 
+# for each concept_uuid, determines the next available ID, and inserts the data into the table. The script ensures 
+# gender is a single uppercase character, uses default values for empty fields, and handles errors gracefully, logging 
+# the outcome of each insert operation with the row number and Concept UUID.
+
 DATABASE_NAME="clinlims"
 TABLE="result_limits"
 CSV_FILE="${CSV_FILE_PATH}"
