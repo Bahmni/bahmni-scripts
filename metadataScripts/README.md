@@ -26,3 +26,20 @@ To use this script:
     POSTGRES_USER="clinlims" \
     ./copy-result-range.sh
     ```
+
+## 📦 [set_saleable_attribute.sh](./openmrs/set_saleable_attribute.sh)
+
+This script allows to set the `saleable` attribute to true for the concepts matched by UUIDS read from a CSV file. This is specifically useful when concepts in bulk needs to be updated with the attribute so that it gets synced with Odoo as products. An example could be `Procedure` concepts. 
+
+The script leverages the concept attribute APIs `/openmrs/ws/rest/v1/concept/$uuid/attribute` and `/openmrs/ws/rest/v1/conceptattributetype?q=saleable&limit=1`
+
+Usage of this script:
+1. Prepare a CSV which contains the UUIDs of the concepts which needs to be updated in the first column.
+
+2. Run the script by passing the required parameters
+
+    ```./set_saleable_attribute.sh path/to/uuids.csv domain username password```
+
+3. Example:
+
+    ```./set_saleable_attribute.sh procedures.csv localhost superman Admin123```
