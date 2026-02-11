@@ -2,10 +2,10 @@
 
 ## Bahmni Scripts
 
-Copyright © 2013–2017 ThoughtWorks, Inc.
+Copyright © 2013–2017 Thoughtworks
 Copyright © 2017–Present OpenMRS Inc
 
-This repository includes software originally developed by ThoughtWorks, Inc.
+This repository includes software originally developed by ThoughtWorks
 as part of the Bahmni project.
 
 ### Contributors
