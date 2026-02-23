@@ -2,16 +2,11 @@
 
 ## Bahmni Scripts
 
-Copyright © 2013–2017 ThoughtWorks, Inc.
-Copyright © 2017–Present OpenMRS Inc
-
-This repository includes software originally developed by ThoughtWorks, Inc.
-as part of the Bahmni project.
+Copyright © 2026 OpenMRS Inc
 
 ### Contributors
 
-See the repository's version control history for the complete and
-authoritative list of contributors.
+This repository has got source code generated at Thoughtworks.
 
 ### Third-Party Components
 
@@ -20,7 +15,3 @@ Such components remain subject to their respective license terms.
 License information can be found in relevant dependency configuration
 files (e.g., `pom.xml`, `package.json`, `requirements.txt`)
 and/or their respective upstream sources.
-
-This NOTICE is provided for attribution and historical reference only.
-It does not modify or supersede the terms of the license governing this repository.
-The applicable license is set forth in the LICENSE file at the root of this repository.
