@@ -35,7 +35,7 @@ Before running the migration, ensure the following are in place:
 Run the backup script before anything else:
 
 ```bash
-./data-backup-legacy-diagnoses.sh
+./data-backup-legacy-diagnoses.sh -u <username> -p <password> -d <dbname> -c <container> 
 ```
 
 The backup protects you if anything goes wrong. The migration script itself is safe to re-run — it will never create duplicates — but having a backup allows a clean rollback if needed.
@@ -48,7 +48,7 @@ The backup protects you if anything goes wrong. The migration script itself is s
 Run the script from the migrations directory:
 
 ```bash
-./data-migrate-legacy-diagnoses.sh
+./data-migrate-legacy-diagnoses.sh -u <username> -p <password> -d <dbname> -c <container> 
 ```
 
 The script is fully interactive — it will prompt for all required inputs one by one.
