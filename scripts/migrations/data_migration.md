@@ -44,6 +44,8 @@ The backup protects you if anything goes wrong. The migration script itself is s
 
 ## 3. Running the Migration
 
+> **Important — Do not run multiple instances simultaneously:** Never run this migration script in two or more terminal sessions or environments at the same time against the same database. Concurrent executions can cause  incorrect row counts, and data inconsistencies that cannot be automatically resolved. Always ensure only one instance of the migration is running at a time.
+
 ### Starting the Script
 Run the script from the migrations directory:
 
