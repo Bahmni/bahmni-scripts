@@ -2,8 +2,9 @@
 set -euo pipefail
 
 # ─── Constants ────────────────────────────────────────────────────────────────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CHUNK_SIZE=10000
-CHECKPOINT_FILE="migration_checkpoint.txt"
+CHECKPOINT_FILE="$SCRIPT_DIR/migration_checkpoint.txt"
 
 # ─── Argument defaults ────────────────────────────────────────────────────────
 DB_HOST="127.0.0.1"
@@ -72,18 +73,21 @@ if [[ -z "$DB_PASS" ]]; then
 fi
 
 # ─── Build MySQL commands ─────────────────────────────────────────────────────
+# Use bash arrays to prevent word-splitting on passwords with special characters.
+# Pass the password via MYSQL_PWD env var so it does not appear in process args.
+export MYSQL_PWD="$DB_PASS"
 if [[ -n "$DOCKER_CONTAINER" ]]; then
-    MYSQL_CMD="docker exec -e MYSQL_PWD=$DB_PASS $DOCKER_CONTAINER mysql -u $DB_USER $DB_NAME"
-    MYSQL_PIPE_CMD="docker exec -i -e MYSQL_PWD=$DB_PASS $DOCKER_CONTAINER mysql -u $DB_USER $DB_NAME"
+    # -e MYSQL_PWD (no =value) forwards the already-exported env var into the container
+    MYSQL_CMD=(docker exec -e MYSQL_PWD "$DOCKER_CONTAINER" mysql -u "$DB_USER" "$DB_NAME")
+    MYSQL_PIPE_CMD=(docker exec -i -e MYSQL_PWD "$DOCKER_CONTAINER" mysql -u "$DB_USER" "$DB_NAME")
 else
-    MYSQL_CMD="mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME"
-    MYSQL_PIPE_CMD="mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME"
+    MYSQL_CMD=(mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" "$DB_NAME")
+    MYSQL_PIPE_CMD=(mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" "$DB_NAME")
 fi
 
 # ─── Log file ─────────────────────────────────────────────────────────────────
-# One file per day — multiple failed runs append to the same file.
-# Successful run deletes ALL log files (current day + previous days).
-LOG_FILE="migration_$(date +%Y%m%d).log"
+# One file per day — all runs (success and failure) append to the same file.
+LOG_FILE="$SCRIPT_DIR/migration_$(date +%Y%m%d).log"
 THIS_RUN_HAD_ERRORS=false
 
 # ─── Helper functions ─────────────────────────────────────────────────────────
@@ -114,9 +118,6 @@ flush_stderr() {
 on_exit() {
     flush_stderr                    # promote any captured errors to log file
     rm -f "$STDERR_TMP"             # clean up temp file
-    if [[ "$THIS_RUN_HAD_ERRORS" == "false" ]]; then
-        rm -f migration_*.log  # success — delete all logs
-    fi
 }
 trap on_exit EXIT
 
@@ -177,6 +178,80 @@ echo ""
 
 log "Migration started"
 
+# ─── Pre-flight: verify all required concept names resolve ────────────────────
+# If any concept name is absent from this deployment's dictionary, the SESSION_VARS
+# SET statements silently assign NULL. A NULL @*_cid makes conditions like
+# "!= @status_ruled_out_cid" always false in MySQL, causing wrong rows to be
+# included or excluded without any error.
+log "Verifying required concept names in deployment dictionary..."
+
+MISSING_CONCEPTS=$("${MYSQL_CMD[@]}" --skip-column-names -e "
+SELECT required_name
+FROM (
+    SELECT 'Visit Diagnoses'          AS required_name UNION ALL
+    SELECT 'Coded Diagnosis'                           UNION ALL
+    SELECT 'Non-coded Diagnosis'                       UNION ALL
+    SELECT 'Diagnosis Certainty'                       UNION ALL
+    SELECT 'Diagnosis order'                           UNION ALL
+    SELECT 'Confirmed'                                 UNION ALL
+    SELECT 'Primary'                                   UNION ALL
+    SELECT 'Bahmni Diagnosis Status'                   UNION ALL
+    SELECT 'Ruled Out Diagnosis'                       UNION ALL
+    SELECT 'Bahmni Diagnosis Revised'
+) AS required
+WHERE NOT EXISTS (
+    SELECT 1 FROM concept_name cn
+    WHERE cn.name                = required.required_name
+      AND cn.concept_name_type   = 'FULLY_SPECIFIED'
+      AND cn.locale_preferred    = true
+      AND cn.locale              = 'en'
+);
+" 2>"$STDERR_TMP")
+flush_stderr
+
+if [[ -n "$MISSING_CONCEPTS" ]]; then
+    echo ""
+    echo "  ERROR: The following required concept names were not found in this deployment's dictionary:"
+    while IFS= read -r concept; do
+        echo "    - $concept"
+    done <<< "$MISSING_CONCEPTS"
+    echo ""
+    echo "  Migration cannot proceed. Verify your OpenMRS concept dictionary."
+    echo ""
+    exit 1
+fi
+
+log "All required concept names verified."
+echo ""
+
+# ─── Pre-flight: verify UNIQUE index on encounter_diagnosis.uuid ─────────────
+# INSERT IGNORE skips already-migrated rows by relying on this constraint.
+# Without it, re-runs silently insert duplicates with no error.
+log "Verifying UNIQUE index on encounter_diagnosis.uuid..."
+
+HAS_UUID_UNIQUE=$("${MYSQL_CMD[@]}" --skip-column-names -e "
+SELECT COUNT(*)
+FROM information_schema.statistics
+WHERE table_schema = DATABASE()
+  AND table_name   = 'encounter_diagnosis'
+  AND column_name  = 'uuid'
+  AND non_unique   = 0;
+" 2>"$STDERR_TMP")
+flush_stderr
+
+if [[ "$HAS_UUID_UNIQUE" -eq 0 ]]; then
+    echo ""
+    echo "  ERROR: No UNIQUE index found on encounter_diagnosis.uuid."
+    echo "  INSERT IGNORE idempotency relies on this constraint to skip already-migrated rows."
+    echo "  Without it, re-running the migration will create duplicate records."
+    echo "  Verify your OpenMRS schema before proceeding."
+    echo ""
+    exit 1
+fi
+
+log "UNIQUE index on encounter_diagnosis.uuid verified."
+echo ""
+
 # ─── Checkpoint detection ─────────────────────────────────────────────────────
 RESUME_FROM_OBS_ID=""
 if [[ -f "$CHECKPOINT_FILE" ]]; then
@@ -209,7 +284,7 @@ RANGE_CONDITION=""
 if [[ "$MIGRATION_TYPE" == "2" ]]; then
     log "Batch mode — fetching available obs_id range..."
 
-    OBS_RANGE=$($MYSQL_CMD --skip-column-names -e "
+    OBS_RANGE=$("${MYSQL_CMD[@]}" --skip-column-names -e "
     SELECT MIN(obs_id), MAX(obs_id)
     FROM obs
     WHERE concept_id = (
@@ -225,6 +300,12 @@ if [[ "$MIGRATION_TYPE" == "2" ]]; then
 
     AVAIL_MIN=$(echo "$OBS_RANGE" | awk '{print $1}')
     AVAIL_MAX=$(echo "$OBS_RANGE" | awk '{print $2}')
+
+    if [[ -z "$AVAIL_MIN" || "$AVAIL_MIN" == "NULL" || -z "$AVAIL_MAX" || "$AVAIL_MAX" == "NULL" ]]; then
+        log "No Visit Diagnoses obs found in this database. Nothing to migrate."
+        exit 0
+    fi
+
     echo "  Available obs_id range : $(fmt_num "$AVAIL_MIN") → $(fmt_num "$AVAIL_MAX")"
     echo ""
 
@@ -250,7 +331,7 @@ if [[ "$MIGRATION_TYPE" == "2" ]]; then
 elif [[ "$MIGRATION_TYPE" == "1" ]]; then
     log "Full migration mode — fetching pending obs_id range..."
 
-    OBS_RANGE=$($MYSQL_CMD --skip-column-names -e "
+    OBS_RANGE=$("${MYSQL_CMD[@]}" --skip-column-names -e "
     SELECT MIN(parent.obs_id), MAX(parent.obs_id)
     FROM obs parent
     WHERE parent.concept_id = (
@@ -339,7 +420,7 @@ fi
 echo "  Counting records pending migration..."
 echo ""
 
-DRY_RUN_COUNT=$($MYSQL_CMD --skip-column-names -e "
+DRY_RUN_COUNT=$("${MYSQL_CMD[@]}" --skip-column-names -e "
 SELECT COUNT(*)
 FROM obs parent
 WHERE parent.concept_id = (
@@ -438,7 +519,7 @@ if [[ "$CONFIRM" != "yes" ]]; then
 fi
 
 # ─── Pre-migration row count ──────────────────────────────────────────────────
-COUNT_BEFORE=$($MYSQL_CMD --skip-column-names -e "
+COUNT_BEFORE=$("${MYSQL_CMD[@]}" --skip-column-names -e "
 SELECT COUNT(*) FROM encounter_diagnosis;
 " 2>"$STDERR_TMP")
 flush_stderr
@@ -457,8 +538,6 @@ START_TIME=$(date +%s)
 TOTAL_INSERTED=0
 CHUNK_NUM=0
 CURRENT_OBS_ID=$START_OBS_ID
-# Tracks the obs_id of the last row actually written to encounter_diagnosis
-LAST_MIGRATED_OBS_ID=${RESUME_FROM_OBS_ID:-0}
 
 while [[ "$CURRENT_OBS_ID" -le "$MAX_OBS_ID" ]]; do
     CHUNK_END=$(( CURRENT_OBS_ID + CHUNK_SIZE - 1 ))
@@ -472,7 +551,7 @@ while [[ "$CURRENT_OBS_ID" -le "$MAX_OBS_ID" ]]; do
 
     # Disable set -e so we can capture MySQL exit code manually
     set +e
-    CHUNK_OUTPUT=$($MYSQL_PIPE_CMD --skip-column-names 2>"$STDERR_TMP" <<EOF
+    CHUNK_OUTPUT=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
 $SESSION_VARS
 START TRANSACTION;
 INSERT IGNORE INTO encounter_diagnosis (
@@ -486,6 +565,9 @@ SELECT
     parent.encounter_id,
     parent.person_id,
     CASE WHEN order_obs.value_coded = @primary_cid THEN 1 ELSE 2 END,
+    -- RULED OUT rows are stored as voided=1 + void_reason='RULED_OUT'. Their certainty falls
+    -- through to 'PROVISIONAL' because encounter_diagnosis has no RULED_OUT certainty enum value.
+    -- The voided flag hides them from the UI regardless of certainty — this is intentional.
     CASE WHEN certainty_obs.value_coded = @confirmed_cid THEN 'CONFIRMED' ELSE 'PROVISIONAL' END,
     CASE WHEN certainty_obs.value_coded = @ruled_out_cid THEN 1 ELSE parent.voided END,
     CASE WHEN certainty_obs.value_coded = @ruled_out_cid THEN parent.creator ELSE NULL END,
@@ -525,6 +607,7 @@ LEFT JOIN concept_name cn_revised
     AND cn_revised.locale_preferred = true
 WHERE parent.concept_id   = @visit_diagnoses_cid
   AND parent.obs_group_id IS NULL
+  AND parent.voided        = 0
   AND (coded.value_coded IS NOT NULL OR noncoded.value_text IS NOT NULL)
   AND (status_obs.obs_id IS NULL OR status_obs.value_coded != @status_ruled_out_cid)
   AND (cn_revised.name IS NULL OR cn_revised.name != 'True')
@@ -532,10 +615,6 @@ WHERE parent.concept_id   = @visit_diagnoses_cid
 SET @rows = ROW_COUNT();
 COMMIT;
 SELECT @rows;
-SELECT MAX(o.obs_id)
-FROM obs o
-INNER JOIN encounter_diagnosis ed ON ed.uuid = o.uuid
-WHERE o.obs_id BETWEEN $CURRENT_OBS_ID AND $CHUNK_END;
 EOF
     )
     MYSQL_EXIT=$?
@@ -543,31 +622,21 @@ EOF
     flush_stderr
 
 
-    log "Chunk $CHUNK_NUM SQL completed successfully."
-
     if [[ $MYSQL_EXIT -ne 0 ]]; then
         echo ""
         log_error "Chunk $CHUNK_NUM failed — obs_id $CURRENT_OBS_ID → $CHUNK_END"
-        log_error "Transaction rolled back. Checkpoint at obs_id $(( CURRENT_OBS_ID - 1 )) is safe. Re-run and choose 'resume'."
-        log_error "Checkpoint at obs_id $(( CURRENT_OBS_ID - 1 )) is safe. Re-run and choose 'resume'."
+        log_error "Transaction rolled back. Re-run and choose 'resume' to continue from the last checkpoint."
         log_error "See $LOG_FILE for MySQL error details."
         exit 1
     fi
 
-    # Extract row count (first numeric line) and last inserted obs_id (last line)
+    log "Chunk $CHUNK_NUM completed successfully."
+
+    # Extract inserted row count from SELECT @rows output
     CHUNK_INSERTED=$(echo "$CHUNK_OUTPUT" | grep -E '^[0-9]+$' | head -1)
     if ! [[ "$CHUNK_INSERTED" =~ ^[0-9]+$ ]]; then
         CHUNK_INSERTED=0
     fi
-
-    # Strip blank lines first — MySQL appends a trailing newline after each
-    # result set, so plain tail -1 lands on an empty line and misses the value.
-    LAST_OBS_RAW=$(echo "$CHUNK_OUTPUT" | grep -v '^[[:space:]]*$' | tail -1)
-    if [[ "$LAST_OBS_RAW" =~ ^[0-9]+$ ]]; then
-        LAST_MIGRATED_OBS_ID=$LAST_OBS_RAW
-    fi
-    # If MAX returned NULL (no rows qualified this chunk), LAST_MIGRATED_OBS_ID
-    # retains the value from the previous chunk.
 
     TOTAL_INSERTED=$(( TOTAL_INSERTED + CHUNK_INSERTED ))
     log "Committing chunk $CHUNK_NUM. Updating checkpoint to obs_id $(fmt_num "$CHUNK_END")"
@@ -600,7 +669,7 @@ EOF
 done
 
 # ─── Post-migration count ─────────────────────────────────────────────────────
-COUNT_AFTER=$($MYSQL_CMD --skip-column-names -e "
+COUNT_AFTER=$("${MYSQL_CMD[@]}" --skip-column-names -e "
 SELECT COUNT(*) FROM encounter_diagnosis;
 " 2>"$STDERR_TMP")
 flush_stderr

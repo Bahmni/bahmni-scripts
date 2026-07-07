@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # --- Parse arguments ---------------------------------------------------------
-DB_HOST="localhost"
+DB_HOST="127.0.0.1"
 DB_PORT="3306"
 DB_USER=""
 DB_PASS=""
@@ -20,7 +20,7 @@ usage() {
     echo "  -p  MySQL password        (optional — prompted securely if not provided)"
     echo "  -d  Database name         (required)"
     echo "  -b  Backup file path      (required)"
-    echo "  -h  Host                  (default: localhost, direct mode only)"
+    echo "  -h  Host                  (default: 127.0.0.1, direct mode only)"
     echo "  -P  Port                  (default: 3306,     direct mode only)"
     echo "  -c  Docker container name"
     echo ""
@@ -134,7 +134,8 @@ WHERE ed.uuid IN (
             SELECT concept_id FROM concept_name
             WHERE name = 'Visit Diagnoses'
               AND concept_name_type = 'FULLY_SPECIFIED'
-              AND locale_preferred = true AND locale = 'en'
+              AND locale_preferred = true
+              AND locale              = 'en'
         )
         AND obs_group_id IS NULL
     ) AS obs
@@ -152,8 +153,8 @@ WHERE ed.uuid IN (
         SELECT concept_id FROM concept_name
         WHERE name = 'Visit Diagnoses'
           AND concept_name_type = 'FULLY_SPECIFIED'
-          AND voided = 0
-        LIMIT 1
+          AND locale_preferred = true
+          AND locale = 'en'
     )
     AND obs.obs_group_id IS NULL
 );

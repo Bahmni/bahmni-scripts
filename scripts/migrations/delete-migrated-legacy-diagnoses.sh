@@ -8,18 +8,20 @@ DB_USER=""
 DB_PASS=""
 DB_NAME=""
 DOCKER_CONTAINER=""
+BACKUP_FILE=""
 
 # ─── Usage ────────────────────────────────────────────────────────────────────
 usage() {
     echo ""
-    echo "Usage: $0 [-h host] [-P port] [-u user] [-p pass] [-d dbname] [-c container]"
+    echo "Usage: $0 -b <backup_file> [-h host] [-P port] [-u user] [-p pass] [-d dbname] [-c container]"
     echo ""
-    echo "  Fully interactive — prompts for any missing required inputs."
+    echo "  -b  Path to a verified backup file (required — this operation is irreversible)"
+    echo "  Fully interactive — prompts for any other missing required inputs."
     echo ""
     exit 1
 }
 
-while getopts "h:P:u:p:d:c:" opt; do
+while getopts "h:P:u:p:d:c:b:" opt; do
     case $opt in
         h) DB_HOST="$OPTARG" ;;
         P) DB_PORT="$OPTARG" ;;
@@ -27,6 +29,7 @@ while getopts "h:P:u:p:d:c:" opt; do
         p) DB_PASS="$OPTARG" ;;
         d) DB_NAME="$OPTARG" ;;
         c) DOCKER_CONTAINER="$OPTARG" ;;
+        b) BACKUP_FILE="$OPTARG" ;;
         *) usage ;;
     esac
 done
@@ -52,6 +55,38 @@ if [[ -z "$DB_PASS" ]]; then
     echo ""
     echo ""
 fi
+
+# ─── Require and verify backup file ──────────────────────────────────────────
+if [[ -z "$BACKUP_FILE" ]]; then
+    echo "  ERROR: A backup file path is required (-b <backup_file>)."
+    echo "  Run data-backup-legacy-diagnoses.sh first and pass the path here."
+    echo ""
+    exit 1
+fi
+
+if [[ ! -f "$BACKUP_FILE" ]]; then
+    echo "  ERROR: Backup file not found: $BACKUP_FILE"
+    echo "  Aborting. Do not proceed without a verified backup."
+    echo ""
+    exit 1
+fi
+
+if [[ $(wc -c < "$BACKUP_FILE") -eq 0 ]]; then
+    echo "  ERROR: Backup file is empty: $BACKUP_FILE"
+    echo "  Aborting. Do not proceed without a verified backup."
+    echo ""
+    exit 1
+fi
+
+if ! grep -q "^-- Dump completed" "$BACKUP_FILE"; then
+    echo "  ERROR: Backup file does not contain a valid mysqldump footer."
+    echo "  The dump may be incomplete. Aborting."
+    echo ""
+    exit 1
+fi
+
+echo "  Backup verified: $BACKUP_FILE ($(du -sh "$BACKUP_FILE" | cut -f1))"
+echo ""
 
 # ─── Build MySQL commands ─────────────────────────────────────────────────────
 if [[ -n "$DOCKER_CONTAINER" ]]; then
@@ -128,31 +163,83 @@ set +e
 $MYSQL_CMD <<EOF
 START TRANSACTION;
 
--- 1. Setup the session variable for the parent concept
-SET @visit_diagnoses_cid = (
-    SELECT concept_id FROM concept_name 
-    WHERE name = 'Visit Diagnoses' 
-      AND concept_name_type = 'FULLY_SPECIFIED' 
-      AND locale_preferred = true 
-      AND locale = 'en'
+-- Setup concept IDs for the parent and every child concept written by the migration
+SET @visit_diagnoses_cid    = (SELECT concept_id FROM concept_name WHERE name = 'Visit Diagnoses'          AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
+SET @coded_diag_cid         = (SELECT concept_id FROM concept_name WHERE name = 'Coded Diagnosis'          AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
+SET @noncoded_diag_cid      = (SELECT concept_id FROM concept_name WHERE name = 'Non-coded Diagnosis'      AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
+SET @certainty_cid          = (SELECT concept_id FROM concept_name WHERE name = 'Diagnosis Certainty'      AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
+SET @order_cid              = (SELECT concept_id FROM concept_name WHERE name = 'Diagnosis order'          AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
+SET @bahmni_diag_status_cid = (SELECT concept_id FROM concept_name WHERE name = 'Bahmni Diagnosis Status'  AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
+SET @revised_cid            = (SELECT concept_id FROM concept_name WHERE name = 'Bahmni Diagnosis Revised' AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
+
+-- 1. Remove obs_relationship rows that reference migrated child obs.
+--    Must run before deleting child obs to avoid FK constraint violations.
+DELETE FROM obs_relationship
+WHERE obs_id IN (
+    SELECT child_obs_id FROM (
+        SELECT child.obs_id AS child_obs_id
+        FROM obs child
+        WHERE child.obs_group_id IN (
+            SELECT o.obs_id FROM obs o
+            INNER JOIN encounter_diagnosis ed ON ed.uuid = o.uuid
+            WHERE o.concept_id = @visit_diagnoses_cid AND o.obs_group_id IS NULL
+        )
+        AND child.concept_id IN (
+            @coded_diag_cid, @noncoded_diag_cid, @certainty_cid,
+            @order_cid, @bahmni_diag_status_cid, @revised_cid
+        )
+    ) AS t
+)
+OR related_obs_id IN (
+    SELECT child_obs_id FROM (
+        SELECT child.obs_id AS child_obs_id
+        FROM obs child
+        WHERE child.obs_group_id IN (
+            SELECT o.obs_id FROM obs o
+            INNER JOIN encounter_diagnosis ed ON ed.uuid = o.uuid
+            WHERE o.concept_id = @visit_diagnoses_cid AND o.obs_group_id IS NULL
+        )
+        AND child.concept_id IN (
+            @coded_diag_cid, @noncoded_diag_cid, @certainty_cid,
+            @order_cid, @bahmni_diag_status_cid, @revised_cid
+        )
+    ) AS t2
 );
 
--- 2. Hard delete all CHILD observations belonging to migrated parents
-DELETE FROM obs 
-WHERE obs_group_id IN (
+-- 2. Remove obs_relationship rows that reference migrated parent obs.
+DELETE FROM obs_relationship
+WHERE obs_id IN (
+    SELECT o.obs_id FROM obs o
+    INNER JOIN encounter_diagnosis ed ON ed.uuid = o.uuid
+    WHERE o.concept_id = @visit_diagnoses_cid AND o.obs_group_id IS NULL
+)
+OR related_obs_id IN (
+    SELECT o.obs_id FROM obs o
+    INNER JOIN encounter_diagnosis ed ON ed.uuid = o.uuid
+    WHERE o.concept_id = @visit_diagnoses_cid AND o.obs_group_id IS NULL
+);
+
+-- 3. Hard delete child obs scoped to concept IDs written by the migration only.
+--    Does not touch any unrelated obs children under the same parent.
+DELETE child FROM obs child
+WHERE child.obs_group_id IN (
     SELECT parent_obs_id FROM (
         SELECT o.obs_id AS parent_obs_id
         FROM obs o
         INNER JOIN encounter_diagnosis ed ON ed.uuid = o.uuid
-        WHERE o.concept_id = @visit_diagnoses_cid 
+        WHERE o.concept_id = @visit_diagnoses_cid
           AND o.obs_group_id IS NULL
     ) AS migrated_parents
+)
+AND child.concept_id IN (
+    @coded_diag_cid, @noncoded_diag_cid, @certainty_cid,
+    @order_cid, @bahmni_diag_status_cid, @revised_cid
 );
 
--- 3. Hard delete the successfully migrated PARENT observations
+-- 4. Hard delete the migrated parent obs
 DELETE o FROM obs o
 INNER JOIN encounter_diagnosis ed ON ed.uuid = o.uuid
-WHERE o.concept_id = @visit_diagnoses_cid 
+WHERE o.concept_id = @visit_diagnoses_cid
   AND o.obs_group_id IS NULL;
 
 COMMIT;

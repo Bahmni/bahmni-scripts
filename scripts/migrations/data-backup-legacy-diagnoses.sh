@@ -7,7 +7,7 @@ DB_HOST="127.0.0.1"
 DB_PORT="3306"
 DB_USER=""
 DB_PASS=""
-DB_NAME="openmrs"
+DB_NAME=""
 DOCKER_CONTAINER=""
 
 usage() {
@@ -93,11 +93,28 @@ fi
 echo "  Taking backup..."
 echo ""
 
-$MYSQLDUMP_CMD --single-transaction --quick "$DB_NAME" obs encounter_diagnosis > "$BACKUP_FILE" 2>/dev/null
+DUMP_STDERR=$(mktemp /tmp/backup_stderr.XXXXXX)
+$MYSQLDUMP_CMD --single-transaction --quick "$DB_NAME" obs encounter_diagnosis > "$BACKUP_FILE" 2>"$DUMP_STDERR"
+DUMP_EXIT=$?
 
-BACKUP_SIZE=$(wc -c < "$BACKUP_FILE")
-if [[ "$BACKUP_SIZE" -eq 0 ]]; then
+if [[ $DUMP_EXIT -ne 0 ]]; then
+    echo "  ERROR: mysqldump failed (exit code $DUMP_EXIT)."
+    cat "$DUMP_STDERR"
+    rm -f "$DUMP_STDERR" "$BACKUP_FILE"
+    echo ""
+    exit 1
+fi
+rm -f "$DUMP_STDERR"
+
+if [[ $(wc -c < "$BACKUP_FILE") -eq 0 ]]; then
     echo "  ERROR: Backup file is empty. Check your connection and credentials."
+    echo ""
+    exit 1
+fi
+
+if ! grep -q "^-- Dump completed" "$BACKUP_FILE"; then
+    echo "  ERROR: Backup file is missing the mysqldump completion footer."
+    echo "  The dump may be incomplete. Do not use this file as a backup."
     echo ""
     exit 1
 fi
