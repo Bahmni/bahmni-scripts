@@ -142,10 +142,6 @@ A diagnosis the clinician explicitly deleted from the patient record in the old 
 A diagnosis the clinician marked as inactive using the `Bahmni Diagnosis Status = Ruled Out Diagnosis` option in the old UI. In the old UI this appeared with a strikethrough.
 * **What happens:** Not migrated at all. The new UI has no equivalent way to display a strikethrough diagnosis — the `encounter_diagnosis` table has no column for clinical status beyond the voided flag. Excluding these records is the safest approach to avoid them appearing as active diagnoses in the new UI.
 
-### RULED OUT Certainty
-A diagnosis where the clinician set the certainty to `RULED OUT` in the old UI. This also appeared with a strikethrough in the old UI.
-* **What happens:** Migrated into the new table as a deleted/voided record. Like deleted diagnoses, the new UI does not display it. The record is preserved in the database for audit purposes.
-
 ### Edited Diagnosis
 When a clinician edits a diagnosis from a past encounter in the old UI, the old Bahmni system:
 1. Keeps the original diagnosis record and marks it as superseded.
@@ -167,10 +163,10 @@ This means at any point in time, only one version of the diagnosis is the "curre
 Although the migration correctly stores `Primary = 1` and `Secondary = 2` in the database, this information is never shown to the clinician. Additionally, any diagnosis saved or edited through the new UI will have its order reset to Primary regardless of its original value.
 
 ### Strikethrough for Ruled Out / Inactive Diagnoses
-* **Old UI:** Diagnoses marked as `RULED OUT` (certainty) or `Ruled Out Diagnosis` (status) were shown with a strikethrough line through the diagnosis name, giving the clinician a visual indication that it was ruled out.
-* **New UI:** There is no strikethrough rendering. `RULED OUT` certainty diagnoses are migrated as hidden (voided) records and are not displayed at all. `Ruled Out Diagnosis` status records are excluded from migration entirely. 
+* **Old UI:** Diagnoses marked as `Ruled Out Diagnosis` (status) were shown with a strikethrough line through the diagnosis name, giving the clinician a visual indication that it was ruled out.
+* **New UI:** There is no strikethrough rendering. `Ruled Out Diagnosis` status records are excluded from migration entirely.
 
-In both cases, the clinician will not see any visual indication of the ruled out status — the diagnosis simply does not appear.
+The clinician will not see any visual indication of the ruled out status — the diagnosis simply does not appear.
 
 ### Important — Migration Is a One-Time Operation
 This migration must be run once, before clinicians begin using the new UI. 
@@ -181,3 +177,34 @@ Once the migration has been run and clinicians have switched to the new UI:
 * **Any new diagnosis added in the old UI after migration** will be picked up by re-running the migration.
 
 **The migration script takes no responsibility for data consistency if the old UI continues to be used after migration.** The recommended approach is to complete the migration, validate the data, and then switch all clinicians to the new UI. Continued parallel use of both UIs will lead to data inconsistencies that cannot be automatically resolved.
+
+---
+
+## 6. Optional Cleanup: Removing Migrated Records from the obs Table
+
+> **This step is outside the scope of the JIRA migration specification.**
+> The migration requirement states that records must persist in the `obs` table as the audit trail. The cleanup script described below is an **optional, irreversible** step and must only be run with explicit clinical and compliance sign-off.
+
+After migration, the legacy diagnosis records remain in the `obs` table. This is by design — the `obs` table serves as the audit trail and the migration does not touch it.
+
+If, after a sufficient retention period and with explicit clinical and compliance approval, you wish to reclaim disk space by removing the migrated records from `obs`, run:
+
+```bash
+./delete-migrated-legacy-diagnoses.sh -b <backup_file> -u <username> -p <password> -d <dbname> -c <container>
+```
+
+### Prerequisites Before Running the Delete Script
+
+* **Backup verified** — the `-b <backup_file>` flag is mandatory. Pass the path to a backup created by `data-backup-legacy-diagnoses.sh`. The script verifies the backup contains a valid mysqldump footer before proceeding.
+* **Migration complete and validated** — the delete script removes obs records that have a matching UUID in `encounter_diagnosis`. Ensure the migration has been fully run and validated first.
+* **Clinical and compliance sign-off obtained** — this operation permanently removes patient clinical data from the `obs` table. Obtain explicit written sign-off from the appropriate clinical and compliance stakeholders before proceeding.
+* **Sufficient retention period observed** — do not run this immediately after migration. Allow adequate time for validation, rollback if needed, and compliance review.
+* **No rollback possible after deletion** — the rollback script (`data-rollback-legacy-diagnoses.sh`) restores `encounter_diagnosis` records but cannot restore hard-deleted `obs` rows. After running the delete script, the `obs` audit trail for migrated diagnoses is permanently gone.
+
+### What the Delete Script Does
+
+1. Clears any `obs_relationship` rows referencing the migrated obs (to avoid FK constraint violations).
+2. Hard-deletes child obs under each migrated parent, scoped only to the concept IDs written by the migration (`Coded Diagnosis`, `Non-coded Diagnosis`, `Diagnosis Certainty`, `Diagnosis order`, `Bahmni Diagnosis Status`, `Bahmni Diagnosis Revised`).
+3. Hard-deletes the migrated parent (`Visit Diagnoses`) obs rows whose UUID exists in `encounter_diagnosis`.
+
+All three steps run inside a single transaction — if any step fails, the entire delete is rolled back and no data is removed.

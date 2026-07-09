@@ -145,7 +145,6 @@ SET @certainty_cid          = (SELECT concept_id FROM concept_name WHERE name = 
 SET @order_cid              = (SELECT concept_id FROM concept_name WHERE name = 'Diagnosis order'        AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
 SET @confirmed_cid          = (SELECT concept_id FROM concept_name WHERE name = 'Confirmed'              AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
 SET @primary_cid            = (SELECT concept_id FROM concept_name WHERE name = 'Primary'                AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
-SET @ruled_out_cid          = (SELECT concept_id FROM concept_name WHERE name = 'RULED OUT'             AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
 SET @bahmni_diag_status_cid = (SELECT concept_id FROM concept_name WHERE name = 'Bahmni Diagnosis Status' AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
 SET @status_ruled_out_cid   = (SELECT concept_id FROM concept_name WHERE name = 'Ruled Out Diagnosis'   AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
 SET @revised_cid            = (SELECT concept_id FROM concept_name WHERE name = 'Bahmni Diagnosis Revised' AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
@@ -284,18 +283,15 @@ RANGE_CONDITION=""
 if [[ "$MIGRATION_TYPE" == "2" ]]; then
     log "Batch mode — fetching available obs_id range..."
 
-    OBS_RANGE=$("${MYSQL_CMD[@]}" --skip-column-names -e "
-    SELECT MIN(obs_id), MAX(obs_id)
-    FROM obs
-    WHERE concept_id = (
-        SELECT concept_id FROM concept_name
-        WHERE name = 'Visit Diagnoses'
-          AND concept_name_type = 'FULLY_SPECIFIED'
-          AND locale_preferred = true
-          AND locale = 'en'
-    )
-    AND obs_group_id IS NULL;
-    " 2>"$STDERR_TMP")
+    OBS_RANGE=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
+$SESSION_VARS
+SELECT MIN(obs_id), MAX(obs_id)
+FROM obs
+WHERE concept_id    = @visit_diagnoses_cid
+  AND obs_group_id IS NULL
+  AND voided        = 0;
+EOF
+)
     flush_stderr
 
     AVAIL_MIN=$(echo "$OBS_RANGE" | awk '{print $1}')
@@ -331,72 +327,49 @@ if [[ "$MIGRATION_TYPE" == "2" ]]; then
 elif [[ "$MIGRATION_TYPE" == "1" ]]; then
     log "Full migration mode — fetching pending obs_id range..."
 
-    OBS_RANGE=$("${MYSQL_CMD[@]}" --skip-column-names -e "
-    SELECT MIN(parent.obs_id), MAX(parent.obs_id)
-    FROM obs parent
-    WHERE parent.concept_id = (
-        SELECT concept_id FROM concept_name
-        WHERE name = 'Visit Diagnoses'
-          AND concept_name_type = 'FULLY_SPECIFIED'
-          AND locale_preferred = true
-          AND locale = 'en'
-    )
-    AND parent.obs_group_id IS NULL
-    AND (
-        EXISTS (
-            SELECT 1 FROM obs coded
-            WHERE coded.obs_group_id = parent.obs_id
-              AND coded.concept_id = (
-                  SELECT concept_id FROM concept_name
-                  WHERE name = 'Coded Diagnosis'
-                    AND concept_name_type = 'FULLY_SPECIFIED'
-                    AND locale_preferred = true AND locale = 'en')
-              AND coded.voided = 0
-        ) OR EXISTS (
-            SELECT 1 FROM obs noncoded
-            WHERE noncoded.obs_group_id = parent.obs_id
-              AND noncoded.concept_id = (
-                  SELECT concept_id FROM concept_name
-                  WHERE name = 'Non-coded Diagnosis'
-                    AND concept_name_type = 'FULLY_SPECIFIED'
-                    AND locale_preferred = true AND locale = 'en')
-              AND noncoded.voided = 0
-        )
-    )
-    AND NOT EXISTS (
-        SELECT 1 FROM encounter_diagnosis ed WHERE ed.uuid = parent.uuid
-    )
-    AND NOT EXISTS (
-        SELECT 1 FROM obs status_obs
-        WHERE status_obs.obs_group_id = parent.obs_id
-          AND status_obs.concept_id = (
-              SELECT concept_id FROM concept_name
-              WHERE name = 'Bahmni Diagnosis Status'
-                AND concept_name_type = 'FULLY_SPECIFIED'
-                AND locale_preferred = true AND locale = 'en')
-          AND status_obs.value_coded = (
-              SELECT concept_id FROM concept_name
-              WHERE name = 'Ruled Out Diagnosis'
-                AND concept_name_type = 'FULLY_SPECIFIED'
-                AND locale_preferred = true AND locale = 'en')
-          AND status_obs.voided = 0
-    )
-    AND NOT EXISTS (
-        SELECT 1 FROM obs revised_obs
-        INNER JOIN concept_name cn_rev
-            ON  cn_rev.concept_id       = revised_obs.value_coded
-            AND cn_rev.locale           = 'en'
-            AND cn_rev.locale_preferred = true
-            AND cn_rev.name             = 'True'
-        WHERE revised_obs.obs_group_id = parent.obs_id
-          AND revised_obs.concept_id = (
-              SELECT concept_id FROM concept_name
-              WHERE name = 'Bahmni Diagnosis Revised'
-                AND concept_name_type = 'FULLY_SPECIFIED'
-                AND locale_preferred = true AND locale = 'en')
-          AND revised_obs.voided = 0
-    );
-    " 2>"$STDERR_TMP")
+    OBS_RANGE=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
+$SESSION_VARS
+SELECT MIN(parent.obs_id), MAX(parent.obs_id)
+FROM obs parent
+WHERE parent.concept_id   = @visit_diagnoses_cid
+  AND parent.obs_group_id IS NULL
+  AND parent.voided        = 0
+  AND (
+      EXISTS (
+          SELECT 1 FROM obs coded
+          WHERE coded.obs_group_id = parent.obs_id
+            AND coded.concept_id   = @coded_diag_cid
+            AND coded.voided       = 0
+      ) OR EXISTS (
+          SELECT 1 FROM obs noncoded
+          WHERE noncoded.obs_group_id = parent.obs_id
+            AND noncoded.concept_id   = @noncoded_diag_cid
+            AND noncoded.voided       = 0
+      )
+  )
+  AND NOT EXISTS (
+      SELECT 1 FROM encounter_diagnosis ed WHERE ed.uuid = parent.uuid
+  )
+  AND NOT EXISTS (
+      SELECT 1 FROM obs status_obs
+      WHERE status_obs.obs_group_id = parent.obs_id
+        AND status_obs.concept_id   = @bahmni_diag_status_cid
+        AND status_obs.value_coded  = @status_ruled_out_cid
+        AND status_obs.voided       = 0
+  )
+  AND NOT EXISTS (
+      SELECT 1 FROM obs revised_obs
+      INNER JOIN concept_name cn_rev
+          ON  cn_rev.concept_id       = revised_obs.value_coded
+          AND cn_rev.locale           = 'en'
+          AND cn_rev.locale_preferred = true
+          AND cn_rev.name             = 'True'
+      WHERE revised_obs.obs_group_id = parent.obs_id
+        AND revised_obs.concept_id   = @revised_cid
+        AND revised_obs.voided       = 0
+  );
+EOF
+)
     flush_stderr
 
     MIN_OBS_ID=$(echo "$OBS_RANGE" | awk '{print $1}')
@@ -420,73 +393,50 @@ fi
 echo "  Counting records pending migration..."
 echo ""
 
-DRY_RUN_COUNT=$("${MYSQL_CMD[@]}" --skip-column-names -e "
+DRY_RUN_COUNT=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
+$SESSION_VARS
 SELECT COUNT(*)
 FROM obs parent
-WHERE parent.concept_id = (
-    SELECT concept_id FROM concept_name
-    WHERE name = 'Visit Diagnoses'
-      AND concept_name_type = 'FULLY_SPECIFIED'
-      AND locale_preferred = true
-      AND locale = 'en'
+WHERE parent.concept_id   = @visit_diagnoses_cid
+  AND parent.obs_group_id IS NULL
+  AND parent.voided        = 0
+  $RANGE_CONDITION
+  AND (
+      EXISTS (
+          SELECT 1 FROM obs coded
+          WHERE coded.obs_group_id = parent.obs_id
+            AND coded.concept_id   = @coded_diag_cid
+            AND coded.voided       = 0
+      ) OR EXISTS (
+          SELECT 1 FROM obs noncoded
+          WHERE noncoded.obs_group_id = parent.obs_id
+            AND noncoded.concept_id   = @noncoded_diag_cid
+            AND noncoded.voided       = 0
+      )
+  )
+  AND NOT EXISTS (
+      SELECT 1 FROM encounter_diagnosis ed WHERE ed.uuid = parent.uuid
+  )
+  AND NOT EXISTS (
+      SELECT 1 FROM obs status_obs
+      WHERE status_obs.obs_group_id = parent.obs_id
+        AND status_obs.concept_id   = @bahmni_diag_status_cid
+        AND status_obs.value_coded  = @status_ruled_out_cid
+        AND status_obs.voided       = 0
+  )
+  AND NOT EXISTS (
+      SELECT 1 FROM obs revised_obs
+      INNER JOIN concept_name cn_rev
+          ON  cn_rev.concept_id       = revised_obs.value_coded
+          AND cn_rev.locale           = 'en'
+          AND cn_rev.locale_preferred = true
+          AND cn_rev.name             = 'True'
+      WHERE revised_obs.obs_group_id = parent.obs_id
+        AND revised_obs.concept_id   = @revised_cid
+        AND revised_obs.voided       = 0
+  );
+EOF
 )
-AND parent.obs_group_id IS NULL
-$RANGE_CONDITION
-AND (
-    EXISTS (
-        SELECT 1 FROM obs coded
-        WHERE coded.obs_group_id = parent.obs_id
-          AND coded.concept_id = (
-              SELECT concept_id FROM concept_name
-              WHERE name = 'Coded Diagnosis'
-                AND concept_name_type = 'FULLY_SPECIFIED'
-                AND locale_preferred = true AND locale = 'en')
-          AND coded.voided = 0
-    ) OR EXISTS (
-        SELECT 1 FROM obs noncoded
-        WHERE noncoded.obs_group_id = parent.obs_id
-          AND noncoded.concept_id = (
-              SELECT concept_id FROM concept_name
-              WHERE name = 'Non-coded Diagnosis'
-                AND concept_name_type = 'FULLY_SPECIFIED'
-                AND locale_preferred = true AND locale = 'en')
-          AND noncoded.voided = 0
-    )
-)
-AND NOT EXISTS (
-    SELECT 1 FROM encounter_diagnosis ed WHERE ed.uuid = parent.uuid
-)
-AND NOT EXISTS (
-    SELECT 1 FROM obs status_obs
-    WHERE status_obs.obs_group_id = parent.obs_id
-      AND status_obs.concept_id = (
-          SELECT concept_id FROM concept_name
-          WHERE name = 'Bahmni Diagnosis Status'
-            AND concept_name_type = 'FULLY_SPECIFIED'
-            AND locale_preferred = true AND locale = 'en')
-      AND status_obs.value_coded = (
-          SELECT concept_id FROM concept_name
-          WHERE name = 'Ruled Out Diagnosis'
-            AND concept_name_type = 'FULLY_SPECIFIED'
-            AND locale_preferred = true AND locale = 'en')
-      AND status_obs.voided = 0
-)
-AND NOT EXISTS (
-    SELECT 1 FROM obs revised_obs
-    INNER JOIN concept_name cn_rev
-        ON  cn_rev.concept_id       = revised_obs.value_coded
-        AND cn_rev.locale           = 'en'
-        AND cn_rev.locale_preferred = true
-        AND cn_rev.name             = 'True'
-    WHERE revised_obs.obs_group_id = parent.obs_id
-      AND revised_obs.concept_id = (
-          SELECT concept_id FROM concept_name
-          WHERE name = 'Bahmni Diagnosis Revised'
-            AND concept_name_type = 'FULLY_SPECIFIED'
-            AND locale_preferred = true AND locale = 'en')
-      AND revised_obs.voided = 0
-);
-" 2>"$STDERR_TMP")
 flush_stderr
 
 # Determine actual start point (resume or fresh)
@@ -565,14 +515,11 @@ SELECT
     parent.encounter_id,
     parent.person_id,
     CASE WHEN order_obs.value_coded = @primary_cid THEN 1 ELSE 2 END,
-    -- RULED OUT rows are stored as voided=1 + void_reason='RULED_OUT'. Their certainty falls
-    -- through to 'PROVISIONAL' because encounter_diagnosis has no RULED_OUT certainty enum value.
-    -- The voided flag hides them from the UI regardless of certainty — this is intentional.
     CASE WHEN certainty_obs.value_coded = @confirmed_cid THEN 'CONFIRMED' ELSE 'PROVISIONAL' END,
-    CASE WHEN certainty_obs.value_coded = @ruled_out_cid THEN 1 ELSE parent.voided END,
-    CASE WHEN certainty_obs.value_coded = @ruled_out_cid THEN parent.creator ELSE NULL END,
-    CASE WHEN certainty_obs.value_coded = @ruled_out_cid THEN parent.date_created ELSE NULL END,
-    CASE WHEN certainty_obs.value_coded = @ruled_out_cid THEN 'RULED_OUT' ELSE NULL END,
+    parent.voided,
+    NULL,
+    NULL,
+    NULL,
     parent.creator,
     parent.date_created,
     parent.uuid
