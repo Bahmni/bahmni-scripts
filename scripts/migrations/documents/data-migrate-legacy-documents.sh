@@ -165,6 +165,71 @@ echo ""
 
 log "Migration started"
 
+# ─── Pre-flight: verify all required concept names resolve ────────────────────
+# If any concept name is absent from this deployment's dictionary, the SESSION_VARS
+# SET statements silently assign NULL. A NULL @*_cid makes conditions like
+# "child.concept_id = @document_cid" always false in MySQL, causing wrong rows to be
+# included or excluded without any error.
+log "Verifying required concept names in deployment dictionary..."
+
+MISSING_CONCEPTS=$($MYSQL_CMD --skip-column-names -e "
+SELECT required_name
+FROM (
+    SELECT 'Document' AS required_name
+) AS required
+WHERE NOT EXISTS (
+    SELECT 1 FROM concept_name cn
+    WHERE cn.name              = required.required_name
+      AND cn.concept_name_type = 'FULLY_SPECIFIED'
+      AND cn.locale_preferred  = true
+      AND cn.locale            = 'en'
+);
+" 2>"$STDERR_TMP")
+flush_stderr
+
+if [[ -n "$MISSING_CONCEPTS" ]]; then
+    echo ""
+    echo "  ERROR: The following required concept names were not found in this deployment's dictionary:"
+    while IFS= read -r concept; do
+        echo "    - $concept"
+    done <<< "$MISSING_CONCEPTS"
+    echo ""
+    echo "  Migration cannot proceed. Verify your OpenMRS concept dictionary."
+    echo ""
+    exit 1
+fi
+
+log "All required concept names verified."
+echo ""
+
+# ─── Pre-flight: verify UNIQUE index on document_reference.uuid ──────────────
+# INSERT IGNORE skips already-migrated rows by relying on this constraint.
+# Without it, re-runs silently insert duplicates with no error.
+log "Verifying UNIQUE index on document_reference.uuid..."
+
+HAS_UUID_UNIQUE=$($MYSQL_CMD --skip-column-names -e "
+SELECT COUNT(*)
+FROM information_schema.statistics
+WHERE table_schema = DATABASE()
+  AND table_name   = 'document_reference'
+  AND column_name  = 'uuid'
+  AND non_unique   = 0;
+" 2>"$STDERR_TMP")
+flush_stderr
+
+if [[ "$HAS_UUID_UNIQUE" -eq 0 ]]; then
+    echo ""
+    echo "  ERROR: No UNIQUE index found on document_reference.uuid."
+    echo "  INSERT IGNORE idempotency relies on this constraint to skip already-migrated rows."
+    echo "  Without it, re-running the migration will create duplicate records."
+    echo "  Verify your OpenMRS schema before proceeding."
+    echo ""
+    exit 1
+fi
+
+log "UNIQUE index on document_reference.uuid verified."
+echo ""
+
 # ─── Checkpoint detection ─────────────────────────────────────────────────────
 RESUME_FROM_OBS_ID=""
 if [[ -f "$CHECKPOINT_FILE" ]]; then
@@ -232,23 +297,25 @@ if [[ "$MIGRATION_TYPE" == "2" ]]; then
 elif [[ "$MIGRATION_TYPE" == "1" ]]; then
     log "Full migration mode — fetching pending obs_id range..."
 
-    OBS_RANGE=$($MYSQL_CMD --skip-column-names -e "
-    SELECT MIN(parent.obs_id), MAX(parent.obs_id)
-    FROM obs parent
-    WHERE parent.obs_group_id IS NULL
-      AND parent.voided = 0
-      AND EXISTS (
-          SELECT 1 FROM obs child
-          WHERE child.obs_group_id = parent.obs_id
-            AND child.concept_id = 42
-            AND child.value_text IS NOT NULL
-            AND child.voided = 0
-      )
-      AND NOT EXISTS (
-          SELECT 1 FROM document_reference dr
-          WHERE dr.uuid = parent.uuid
-      );
-    " 2>"$STDERR_TMP")
+    OBS_RANGE=$($MYSQL_PIPE_CMD --skip-column-names 2>"$STDERR_TMP" <<EOF
+$SESSION_VARS
+SELECT MIN(parent.obs_id), MAX(parent.obs_id)
+FROM obs parent
+WHERE parent.obs_group_id IS NULL
+  AND parent.voided = 0
+  AND EXISTS (
+      SELECT 1 FROM obs child
+      WHERE child.obs_group_id = parent.obs_id
+        AND child.concept_id = @document_cid
+        AND child.value_text IS NOT NULL
+        AND child.voided = 0
+  )
+  AND NOT EXISTS (
+      SELECT 1 FROM document_reference dr
+      WHERE dr.uuid = parent.uuid
+  );
+EOF
+)
     flush_stderr
 
     MIN_OBS_ID=$(echo "$OBS_RANGE" | awk '{print $1}')
@@ -272,7 +339,8 @@ fi
 echo "  Counting records pending migration..."
 echo ""
 
-DRY_RUN_COUNT=$($MYSQL_CMD --skip-column-names -e "
+DRY_RUN_COUNT=$($MYSQL_PIPE_CMD --skip-column-names 2>"$STDERR_TMP" <<EOF
+$SESSION_VARS
 SELECT COUNT(*)
 FROM obs parent
 WHERE parent.obs_group_id IS NULL
@@ -281,7 +349,7 @@ WHERE parent.obs_group_id IS NULL
   AND EXISTS (
       SELECT 1 FROM obs child
       WHERE child.obs_group_id = parent.obs_id
-        AND child.concept_id = 42
+        AND child.concept_id = @document_cid
         AND child.value_text IS NOT NULL
         AND child.voided = 0
   )
@@ -289,7 +357,8 @@ WHERE parent.obs_group_id IS NULL
       SELECT 1 FROM document_reference dr
       WHERE dr.uuid = parent.uuid
   );
-" 2>"$STDERR_TMP")
+EOF
+)
 flush_stderr
 
 # Determine actual start point (resume or fresh)
@@ -396,7 +465,7 @@ FROM obs parent
     INNER JOIN obs child ON child.obs_group_id = parent.obs_id
 WHERE parent.obs_group_id IS NULL
   AND parent.voided = 0
-  AND child.concept_id = 42
+  AND child.concept_id = @document_cid
   AND child.value_text IS NOT NULL
   AND child.voided = 0
   AND parent.obs_id BETWEEN $CURRENT_OBS_ID AND $CHUNK_END
@@ -446,7 +515,7 @@ FROM obs parent
     INNER JOIN document_reference dr ON dr.uuid = parent.uuid
 WHERE parent.obs_group_id IS NULL
   AND parent.voided = 0
-  AND child.concept_id = 42
+  AND child.concept_id = @document_cid
   AND child.value_text IS NOT NULL
   AND child.voided = 0
   AND parent.obs_id BETWEEN $CURRENT_OBS_ID AND $CHUNK_END
