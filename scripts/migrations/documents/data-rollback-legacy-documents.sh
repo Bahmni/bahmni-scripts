@@ -2,8 +2,16 @@
 
 set -euo pipefail
 
+# --- Script directory --------------------------------------------------------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# --- Session variables (resolve concept IDs dynamically) ----------------------
+SESSION_VARS="
+SET @document_cid = (SELECT concept_id FROM concept_name WHERE name = 'Document' AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
+"
+
 # --- Parse arguments ---------------------------------------------------------
-DB_HOST="localhost"
+DB_HOST="127.0.0.1"
 DB_PORT="3306"
 DB_USER=""
 DB_PASS=""
@@ -51,10 +59,12 @@ if [[ -z "$DB_PASS" ]]; then
     echo ""
 fi
 
+# Use bash arrays to prevent word-splitting on passwords with special characters
+export MYSQL_PWD="$DB_PASS"
 if [[ -n "$DOCKER_CONTAINER" ]]; then
-    MYSQL_CMD="docker exec -e MYSQL_PWD=$DB_PASS $DOCKER_CONTAINER mysql -u $DB_USER $DB_NAME"
+    MYSQL_CMD=(docker exec -e MYSQL_PWD "$DOCKER_CONTAINER" mysql -u "$DB_USER" "$DB_NAME")
 else
-    MYSQL_CMD="mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME"
+    MYSQL_CMD=(mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" "$DB_NAME")
 fi
 
 # --- Verify backup file ------------------------------------------------------
@@ -83,13 +93,19 @@ echo ""
 echo "  Counting document_reference rows that will be deleted..."
 echo ""
 
-DELETE_COUNT=$($MYSQL_CMD --skip-column-names -e "
+DELETE_COUNT=$("${MYSQL_CMD[@]}" --skip-column-names -e "
+$SESSION_VARS
 SELECT COUNT(*)
 FROM document_reference dr
 WHERE dr.uuid IN (
-    SELECT obs.uuid
-    FROM obs
-    WHERE obs.obs_group_id IS NULL
+    SELECT parent.uuid
+    FROM obs parent
+    WHERE parent.obs_group_id IS NULL
+      AND EXISTS (
+          SELECT 1 FROM obs child
+          WHERE child.obs_group_id = parent.obs_id
+            AND child.concept_id = @document_cid
+      )
 );
 ")
 
@@ -116,17 +132,20 @@ fi
 echo "  Deleting document_reference_content rows..."
 echo ""
 
-$MYSQL_CMD -e "
+"${MYSQL_CMD[@]}" -e "
+$SESSION_VARS
 DELETE drc
 FROM document_reference_content drc
 WHERE drc.document_reference_id IN (
     SELECT dr.document_reference_id
     FROM document_reference dr
-    WHERE dr.uuid IN (
-        SELECT obs.uuid
-        FROM obs
-        WHERE obs.obs_group_id IS NULL
-    )
+    INNER JOIN obs parent ON dr.uuid = parent.uuid
+    WHERE parent.obs_group_id IS NULL
+      AND EXISTS (
+          SELECT 1 FROM obs child
+          WHERE child.obs_group_id = parent.obs_id
+            AND child.concept_id = @document_cid
+      )
 );
 "
 
@@ -134,27 +153,31 @@ WHERE drc.document_reference_id IN (
 echo "  Deleting document_reference rows..."
 echo ""
 
-$MYSQL_CMD -e "
+"${MYSQL_CMD[@]}" -e "
+$SESSION_VARS
 DELETE dr
 FROM document_reference dr
-WHERE dr.uuid IN (
-    SELECT obs.uuid
-    FROM (
-        SELECT uuid FROM obs
-        WHERE obs_group_id IS NULL
-    ) AS obs
-);
+INNER JOIN obs parent ON dr.uuid = parent.uuid
+WHERE parent.obs_group_id IS NULL
+  AND EXISTS (
+      SELECT 1 FROM obs child
+      WHERE child.obs_group_id = parent.obs_id
+        AND child.concept_id = @document_cid
+  );
 "
 
 # --- Verify ------------------------------------------------------------------
-REMAINING_COUNT=$($MYSQL_CMD --skip-column-names -e "
+REMAINING_COUNT=$("${MYSQL_CMD[@]}" --skip-column-names -e "
+$SESSION_VARS
 SELECT COUNT(*)
 FROM document_reference dr
-WHERE dr.uuid IN (
-    SELECT obs.uuid
-    FROM obs
-    WHERE obs.obs_group_id IS NULL
-);
+INNER JOIN obs parent ON dr.uuid = parent.uuid
+WHERE parent.obs_group_id IS NULL
+  AND EXISTS (
+      SELECT 1 FROM obs child
+      WHERE child.obs_group_id = parent.obs_id
+        AND child.concept_id = @document_cid
+  );
 ")
 
 if [[ "$REMAINING_COUNT" -ne 0 ]]; then

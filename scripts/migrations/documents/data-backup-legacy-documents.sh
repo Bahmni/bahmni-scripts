@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# --- Script directory --------------------------------------------------------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # --- Parse arguments ---------------------------------------------------------
 DB_HOST="127.0.0.1"
 DB_PORT="3306"
@@ -48,13 +51,14 @@ if [[ -z "$DB_PASS" ]]; then
     echo ""
 fi
 
-BACKUP_FILE="$(dirname "${BASH_SOURCE[0]}")/backup_BAH-4718_$(date +%Y%m%d_%H%M%S).sql"
+BACKUP_FILE="$SCRIPT_DIR/backup_BAH-4718_$(date +%Y%m%d_%H%M%S).sql"
 
 # --- Build mysqldump command --------------------------------------------------
+export MYSQL_PWD="$DB_PASS"
 if [[ -n "$DOCKER_CONTAINER" ]]; then
-    MYSQLDUMP_CMD="docker exec -e MYSQL_PWD=$DB_PASS $DOCKER_CONTAINER mysqldump -u $DB_USER"
+    MYSQLDUMP_CMD=(docker exec -e MYSQL_PWD "$DOCKER_CONTAINER" mysqldump -u "$DB_USER")
 else
-    MYSQLDUMP_CMD="mysqldump -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS"
+    MYSQLDUMP_CMD=(mysqldump -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER")
 fi
 
 # --- Header ------------------------------------------------------------------
@@ -93,12 +97,30 @@ fi
 echo "  Taking backup..."
 echo ""
 
-$MYSQLDUMP_CMD --single-transaction --quick "$DB_NAME" obs document_reference document_reference_content > "$BACKUP_FILE" 2>/dev/null
+DUMP_STDERR=$(mktemp /tmp/backup_stderr.XXXXXX)
+"${MYSQLDUMP_CMD[@]}" --single-transaction --quick "$DB_NAME" obs document_reference document_reference_content > "$BACKUP_FILE" 2>"$DUMP_STDERR"
+DUMP_EXIT=$?
 
-BACKUP_SIZE=$(wc -c < "$BACKUP_FILE")
-if [[ "$BACKUP_SIZE" -eq 0 ]]; then
+if [[ $DUMP_EXIT -ne 0 ]]; then
+    echo "  ERROR: mysqldump failed (exit code $DUMP_EXIT)."
+    cat "$DUMP_STDERR"
+    rm -f "$DUMP_STDERR" "$BACKUP_FILE"
+    echo ""
+    exit 1
+fi
+rm -f "$DUMP_STDERR"
+
+if [[ $(wc -c < "$BACKUP_FILE") -eq 0 ]]; then
     echo "  ERROR: Backup file is empty. Check your connection and credentials."
     echo ""
+    exit 1
+fi
+
+if ! grep -q "^-- Dump completed" "$BACKUP_FILE"; then
+    echo "  ERROR: Backup file is missing the mysqldump completion footer."
+    echo "  The dump may be incomplete. Do not use this file as a backup."
+    echo ""
+    rm -f "$BACKUP_FILE"
     exit 1
 fi
 

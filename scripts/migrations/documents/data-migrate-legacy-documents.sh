@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# ─── Script directory ─────────────────────────────────────────────────────────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # ─── Constants ────────────────────────────────────────────────────────────────
 CHUNK_SIZE=10000
-CHECKPOINT_FILE="migration_checkpoint.txt"
+CHECKPOINT_FILE="$SCRIPT_DIR/migration_checkpoint_BAH-4718.txt"
 
 # ─── Argument defaults ────────────────────────────────────────────────────────
 DB_HOST="127.0.0.1"
@@ -72,16 +75,20 @@ if [[ -z "$DB_PASS" ]]; then
 fi
 
 # ─── Build MySQL commands ─────────────────────────────────────────────────────
+# Use bash arrays to prevent word-splitting on passwords with special characters.
+# Pass the password via MYSQL_PWD env var so it does not appear in process args.
+export MYSQL_PWD="$DB_PASS"
 if [[ -n "$DOCKER_CONTAINER" ]]; then
-    MYSQL_CMD="docker exec -e MYSQL_PWD=$DB_PASS $DOCKER_CONTAINER mysql -u $DB_USER $DB_NAME"
-    MYSQL_PIPE_CMD="docker exec -i -e MYSQL_PWD=$DB_PASS $DOCKER_CONTAINER mysql -u $DB_USER $DB_NAME"
+    # -e MYSQL_PWD (no =value) forwards the already-exported env var into the container
+    MYSQL_CMD=(docker exec -e MYSQL_PWD "$DOCKER_CONTAINER" mysql -u "$DB_USER" "$DB_NAME")
+    MYSQL_PIPE_CMD=(docker exec -i -e MYSQL_PWD "$DOCKER_CONTAINER" mysql -u "$DB_USER" "$DB_NAME")
 else
-    MYSQL_CMD="mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME"
-    MYSQL_PIPE_CMD="mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME"
+    MYSQL_CMD=(mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" "$DB_NAME")
+    MYSQL_PIPE_CMD=(mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" "$DB_NAME")
 fi
 
 # ─── Log file ─────────────────────────────────────────────────────────────────
-LOG_FILE="migration_$(date +%Y%m%d).log"
+LOG_FILE="$SCRIPT_DIR/migration_BAH-4718_$(date +%Y%m%d).log"
 THIS_RUN_HAD_ERRORS=false
 
 # ─── Helper functions ─────────────────────────────────────────────────────────
@@ -113,7 +120,7 @@ on_exit() {
     flush_stderr
     rm -f "$STDERR_TMP"
     if [[ "$THIS_RUN_HAD_ERRORS" == "false" ]]; then
-        rm -f migration_*.log
+        rm -f "$LOG_FILE"
     fi
 }
 trap on_exit EXIT
@@ -172,7 +179,7 @@ log "Migration started"
 # included or excluded without any error.
 log "Verifying required concept names in deployment dictionary..."
 
-MISSING_CONCEPTS=$($MYSQL_CMD --skip-column-names -e "
+MISSING_CONCEPTS=$("${MYSQL_CMD[@]}" --skip-column-names -e "
 SELECT required_name
 FROM (
     SELECT 'Document' AS required_name
@@ -207,7 +214,7 @@ echo ""
 # Without it, re-runs silently insert duplicates with no error.
 log "Verifying UNIQUE index on document_reference.uuid..."
 
-HAS_UUID_UNIQUE=$($MYSQL_CMD --skip-column-names -e "
+HAS_UUID_UNIQUE=$("${MYSQL_CMD[@]}" --skip-column-names -e "
 SELECT COUNT(*)
 FROM information_schema.statistics
 WHERE table_schema = DATABASE()
@@ -262,16 +269,30 @@ RANGE_CONDITION=""
 if [[ "$MIGRATION_TYPE" == "2" ]]; then
     log "Batch mode — fetching available obs_id range..."
 
-    OBS_RANGE=$($MYSQL_CMD --skip-column-names -e "
+    OBS_RANGE=$("${MYSQL_CMD[@]}" --skip-column-names -e "
+    SET @document_cid = (SELECT concept_id FROM concept_name WHERE name = 'Document' AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
     SELECT MIN(obs_id), MAX(obs_id)
-    FROM obs
-    WHERE obs_group_id IS NULL
-      AND voided = 0;
+    FROM obs parent
+    WHERE parent.obs_group_id IS NULL
+      AND parent.voided = 0
+      AND EXISTS (
+          SELECT 1 FROM obs child
+          WHERE child.obs_group_id = parent.obs_id
+            AND child.concept_id = @document_cid
+            AND child.value_text IS NOT NULL
+            AND child.voided = 0
+      );
     " 2>"$STDERR_TMP")
     flush_stderr
 
     AVAIL_MIN=$(echo "$OBS_RANGE" | awk '{print $1}')
     AVAIL_MAX=$(echo "$OBS_RANGE" | awk '{print $2}')
+
+    if [[ -z "$AVAIL_MIN" || "$AVAIL_MIN" == "NULL" || -z "$AVAIL_MAX" || "$AVAIL_MAX" == "NULL" ]]; then
+        log "No document obs found in this database. Nothing to migrate."
+        exit 0
+    fi
+
     echo "  Available obs_id range : $(fmt_num "$AVAIL_MIN") → $(fmt_num "$AVAIL_MAX")"
     echo ""
 
@@ -297,7 +318,7 @@ if [[ "$MIGRATION_TYPE" == "2" ]]; then
 elif [[ "$MIGRATION_TYPE" == "1" ]]; then
     log "Full migration mode — fetching pending obs_id range..."
 
-    OBS_RANGE=$($MYSQL_PIPE_CMD --skip-column-names 2>"$STDERR_TMP" <<EOF
+    OBS_RANGE=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
 $SESSION_VARS
 SELECT MIN(parent.obs_id), MAX(parent.obs_id)
 FROM obs parent
@@ -339,20 +360,20 @@ fi
 echo "  Counting records pending migration..."
 echo ""
 
-DRY_RUN_COUNT=$($MYSQL_PIPE_CMD --skip-column-names 2>"$STDERR_TMP" <<EOF
+DRY_RUN_COUNT=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
 $SESSION_VARS
 SELECT COUNT(*)
 FROM obs parent
+    INNER JOIN patient ON patient.patient_id = parent.person_id
+    INNER JOIN encounter enc ON parent.encounter_id = enc.encounter_id
+    INNER JOIN obs child ON child.obs_group_id = parent.obs_id
 WHERE parent.obs_group_id IS NULL
   AND parent.voided = 0
   $RANGE_CONDITION
-  AND EXISTS (
-      SELECT 1 FROM obs child
-      WHERE child.obs_group_id = parent.obs_id
-        AND child.concept_id = @document_cid
-        AND child.value_text IS NOT NULL
-        AND child.voided = 0
-  )
+  AND child.concept_id = @document_cid
+  AND child.value_text IS NOT NULL
+  AND child.voided = 0
+  AND enc.voided = 0
   AND NOT EXISTS (
       SELECT 1 FROM document_reference dr
       WHERE dr.uuid = parent.uuid
@@ -391,7 +412,7 @@ if [[ "$CONFIRM" != "yes" ]]; then
 fi
 
 # ─── Pre-migration row count ──────────────────────────────────────────────────
-COUNT_BEFORE=$($MYSQL_CMD --skip-column-names -e "
+COUNT_BEFORE=$("${MYSQL_CMD[@]}" --skip-column-names -e "
 SELECT COUNT(*) FROM document_reference;
 " 2>"$STDERR_TMP")
 flush_stderr
@@ -410,7 +431,6 @@ START_TIME=$(date +%s)
 TOTAL_INSERTED=0
 CHUNK_NUM=0
 CURRENT_OBS_ID=$START_OBS_ID
-LAST_MIGRATED_OBS_ID=${RESUME_FROM_OBS_ID:-0}
 
 while [[ "$CURRENT_OBS_ID" -le "$MAX_OBS_ID" ]]; do
     CHUNK_END=$(( CURRENT_OBS_ID + CHUNK_SIZE - 1 ))
@@ -424,7 +444,7 @@ while [[ "$CURRENT_OBS_ID" -le "$MAX_OBS_ID" ]]; do
 
     # Disable set -e so we can capture MySQL exit code manually
     set +e
-    CHUNK_OUTPUT=$($MYSQL_PIPE_CMD --skip-column-names 2>"$STDERR_TMP" <<EOF
+    CHUNK_OUTPUT=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
 $SESSION_VARS
 START TRANSACTION;
 INSERT IGNORE INTO document_reference (
@@ -436,11 +456,11 @@ INSERT IGNORE INTO document_reference (
 SELECT
     parent.uuid,
     'CURRENT',
-    CASE WHEN parent.voided = 1 THEN 'ENTEREDINERROR' ELSE 'FINAL' END,
-    COALESCE(parent.concept_id, @document_cid),
+    'FINAL',
+    parent.concept_id,
     patient.patient_id,
     parent.encounter_id,
-    COALESCE(ep.provider_id, NULL),
+    MIN(ep.provider_id),
     parent.obs_datetime,
     SUBSTRING(COALESCE((
         SELECT child.comments
@@ -492,21 +512,11 @@ SELECT
       WHEN 'png' THEN 'image/png'
       WHEN 'gif' THEN 'image/gif'
       WHEN 'bmp' THEN 'image/bmp'
-      WHEN 'webp' THEN 'image/webp'
-      WHEN 'avif' THEN 'image/avif'
-      WHEN 'tiff' THEN 'image/tiff'
-      WHEN 'tif' THEN 'image/tiff'
-      WHEN 'dcm' THEN 'application/dicom'
-      WHEN 'mov' THEN 'video/quicktime'
-      WHEN 'mp4' THEN 'video/mp4'
-      WHEN 'doc' THEN 'application/msword'
-      WHEN 'docx' THEN 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      WHEN 'txt' THEN 'text/plain'
       ELSE 'application/octet-stream'
     END,
     child.creator,
     child.date_created,
-    COALESCE(child.voided, 0),
+    0,
     child.voided_by,
     child.date_voided,
     child.void_reason
@@ -528,17 +538,11 @@ SET @drc_rows = ROW_COUNT();
 
 COMMIT;
 SELECT @dr_rows;
-SELECT MAX(o.obs_id)
-FROM obs o
-INNER JOIN document_reference dr ON dr.uuid = o.uuid
-WHERE o.obs_id BETWEEN $CURRENT_OBS_ID AND $CHUNK_END;
 EOF
     )
     MYSQL_EXIT=$?
     set -e
     flush_stderr
-
-    log "Chunk $CHUNK_NUM SQL completed successfully."
 
     if [[ $MYSQL_EXIT -ne 0 ]]; then
         echo ""
@@ -548,14 +552,11 @@ EOF
         exit 1
     fi
 
+    log "Chunk $CHUNK_NUM SQL completed successfully."
+
     CHUNK_INSERTED=$(echo "$CHUNK_OUTPUT" | grep -E '^[0-9]+$' | head -1)
     if ! [[ "$CHUNK_INSERTED" =~ ^[0-9]+$ ]]; then
         CHUNK_INSERTED=0
-    fi
-
-    LAST_OBS_RAW=$(echo "$CHUNK_OUTPUT" | grep -v '^[[:space:]]*$' | tail -1)
-    if [[ "$LAST_OBS_RAW" =~ ^[0-9]+$ ]]; then
-        LAST_MIGRATED_OBS_ID=$LAST_OBS_RAW
     fi
 
     TOTAL_INSERTED=$(( TOTAL_INSERTED + CHUNK_INSERTED ))
@@ -589,7 +590,7 @@ EOF
 done
 
 # ─── Post-migration count ─────────────────────────────────────────────────────
-COUNT_AFTER=$($MYSQL_CMD --skip-column-names -e "
+COUNT_AFTER=$("${MYSQL_CMD[@]}" --skip-column-names -e "
 SELECT COUNT(*) FROM document_reference;
 " 2>"$STDERR_TMP")
 flush_stderr

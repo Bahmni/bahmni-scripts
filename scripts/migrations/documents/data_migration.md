@@ -38,18 +38,20 @@ This migration script copies legacy documents from the old table structure into 
 
 ### Starting the Script
 ```bash
-./data-migrate-legacy-documents.sh -u <username> -p <password> -d <dbname> -c <container>
+./data-migrate-legacy-documents.sh -u <username> -p <password> -d <dbname> [-c <container>]
 ```
 
-The script will:
-1. Count pending documents
-2. Ask for confirmation
-3. Migrate in chunks to avoid locks
-4. Report results
+### Interactive Prompts
+
+The script prompts for missing parameters:
+* **Docker container** (if `-c` not provided) — leave blank for direct connection
+* **Migration mode** (if full mode vs. batch mode not specified via environment) — choose based on dataset size
+* **Confirmation** — confirms document count and asks before starting
 
 ### What to Expect
 * **Dry-run count** — Shows how many documents will be migrated
-* **Confirmation prompt** — Confirm before starting
+* **Interactive prompts** — May ask for container name and migration mode if not pre-configured
+* **Confirmation prompt** — Confirms record count before starting
 * **Progress updates** — Shows chunks processed
 * **Completion message** — Total migrated
 
