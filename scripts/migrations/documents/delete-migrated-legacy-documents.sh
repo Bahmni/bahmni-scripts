@@ -86,19 +86,31 @@ echo ""
 echo "  Calculating records to be deleted..."
 
 TARGET_COUNTS=$("${MYSQL_CMD[@]}" --skip-column-names <<EOF
+$SESSION_VARS
 SELECT
     (SELECT COUNT(*)
      FROM obs o
      INNER JOIN document_reference dr ON dr.uuid = o.uuid
-     WHERE o.obs_group_id IS NULL) AS parent_count,
+     WHERE o.obs_group_id IS NULL
+       AND EXISTS (
+           SELECT 1 FROM obs child
+           WHERE child.obs_group_id = o.obs_id
+             AND child.concept_id = @document_cid
+       )) AS parent_count,
     (SELECT COUNT(*)
      FROM obs child
-     WHERE child.obs_group_id IN (
-         SELECT o.obs_id
-         FROM obs o
-         INNER JOIN document_reference dr ON dr.uuid = o.uuid
-         WHERE o.obs_group_id IS NULL
-     )) AS child_count;
+     WHERE child.concept_id = @document_cid
+       AND child.obs_group_id IN (
+           SELECT o.obs_id
+           FROM obs o
+           INNER JOIN document_reference dr ON dr.uuid = o.uuid
+           WHERE o.obs_group_id IS NULL
+             AND EXISTS (
+                 SELECT 1 FROM obs child2
+                 WHERE child2.obs_group_id = o.obs_id
+                   AND child2.concept_id = @document_cid
+             )
+       )) AS child_count;
 EOF
 )
 

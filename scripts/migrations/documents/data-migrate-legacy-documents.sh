@@ -460,7 +460,7 @@ SELECT
     parent.concept_id,
     patient.patient_id,
     parent.encounter_id,
-    MIN(ep.provider_id),
+    ep.provider_id,
     parent.obs_datetime,
     SUBSTRING(COALESCE((
         SELECT child.comments
@@ -481,7 +481,12 @@ SELECT
 FROM obs parent
     INNER JOIN patient ON patient.patient_id = parent.person_id
     INNER JOIN encounter enc ON parent.encounter_id = enc.encounter_id
-    LEFT JOIN encounter_provider ep ON enc.encounter_id = ep.encounter_id AND ep.voided = 0
+    LEFT JOIN (
+        SELECT encounter_id, MIN(provider_id) AS provider_id
+        FROM encounter_provider
+        WHERE voided = 0
+        GROUP BY encounter_id
+    ) ep ON ep.encounter_id = enc.encounter_id
     INNER JOIN obs child ON child.obs_group_id = parent.obs_id
 WHERE parent.obs_group_id IS NULL
   AND parent.voided = 0
