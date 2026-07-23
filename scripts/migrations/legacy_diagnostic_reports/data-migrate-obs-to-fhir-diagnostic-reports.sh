@@ -739,16 +739,21 @@ WHERE parent.obs_group_id IS NULL
   AND parent.obs_id BETWEEN $CURRENT_OBS_ID AND $CHUNK_END;
 
 -- ── Step 6: migration batch log ──────────────────────────────────────────────
--- Records every diagnostic_report_id created in this batch so the rollback
--- script can delete only migration rows and leave React UI rows untouched.
+-- Records ONLY rows inserted by THIS run. The LEFT JOIN + IS NULL guard skips
+-- rows already logged by a prior batch covering the same obs_id range.
+-- Without this, rolling back this batch would delete rows owned by an earlier
+-- batch, silently corrupting the earlier audit trail (AC-13/14/17).
 INSERT IGNORE INTO fhir_diag_report_migration_log
     (batch_id, diagnostic_report_id, obs_id, migrated_at)
 SELECT @batch_id, dr.diagnostic_report_id, o.obs_id, NOW()
 FROM obs o
 JOIN fhir_diagnostic_report dr ON dr.uuid = o.uuid
+LEFT JOIN fhir_diag_report_migration_log existing
+       ON existing.diagnostic_report_id = dr.diagnostic_report_id
 WHERE o.obs_id BETWEEN $CURRENT_OBS_ID AND $CHUNK_END
   AND o.obs_group_id IS NULL
-  AND o.order_id     IS NOT NULL;
+  AND o.order_id     IS NOT NULL
+  AND existing.diagnostic_report_id IS NULL;
 
 COMMIT;
 
