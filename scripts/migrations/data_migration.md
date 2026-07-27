@@ -118,6 +118,16 @@ Shows how many records were inserted in this run in the new table:
 4. `encounter_diagnosis` after
 5. Total time elapsed
 
+### Where Output Goes
+
+The script writes to three different places, each for a different purpose:
+
+| Destination | What goes there | Persists after the run? |
+|---|---|---|
+| **Terminal (screen)** | Interactive prompts, progress per chunk (obs_id range, rows inserted, elapsed/ETA), the final migration summary, and any error that happens *inside* the chunked migration loop (e.g. a chunk's INSERT/COMMIT failing). | No — lost once the terminal session ends. |
+| **Log file** (`migration_YYYYMMDD.log`, created next to the script) | Every `INFO` line also printed to screen, plus the raw MySQL/database error output for **any** query the script runs — including pre-flight checks (verifying concept names, verifying the UNIQUE index on `encounter_diagnosis.uuid`) and the before/after row counts. If one of these pre-flight or count queries fails, the script stops immediately and the only place the actual database error appears is this log file — nothing is printed to the terminal for that case. Always check this file if the script exits unexpectedly with no visible error. | Yes — one file per calendar day; multiple runs on the same day append to it. |
+| **Checkpoint file** (`migration_checkpoint.txt`, created next to the script) | Only the `obs_id` of the last successfully committed chunk (`Last Scanned obs_id - <id>`), updated after every chunk commit. Used to resume a full migration that was interrupted. | Yes, until the migration completes successfully — it is deleted automatically once the run finishes with no more pending records. |
+
 ### Batch Migration Example
 If you have 30,000 records and want to migrate in batches of 10,000:
 * **Run 1** → start: 1, end: 10000 → 9,800 records migrated
