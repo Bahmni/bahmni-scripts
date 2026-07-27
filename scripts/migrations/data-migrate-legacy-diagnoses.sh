@@ -138,16 +138,17 @@ log_error() {
 
 # ─── Session variables SQL (re-resolved per chunk — separate connections) ─────
 SESSION_VARS="
-SET @visit_diagnoses_cid    = (SELECT concept_id FROM concept_name WHERE name = 'Visit Diagnoses'        AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
-SET @coded_diag_cid         = (SELECT concept_id FROM concept_name WHERE name = 'Coded Diagnosis'        AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
-SET @noncoded_diag_cid      = (SELECT concept_id FROM concept_name WHERE name = 'Non-coded Diagnosis'    AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
-SET @certainty_cid          = (SELECT concept_id FROM concept_name WHERE name = 'Diagnosis Certainty'    AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
-SET @order_cid              = (SELECT concept_id FROM concept_name WHERE name = 'Diagnosis order'        AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
-SET @confirmed_cid          = (SELECT concept_id FROM concept_name WHERE name = 'Confirmed'              AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
-SET @primary_cid            = (SELECT concept_id FROM concept_name WHERE name = 'Primary'                AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
-SET @bahmni_diag_status_cid = (SELECT concept_id FROM concept_name WHERE name = 'Bahmni Diagnosis Status' AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
-SET @status_ruled_out_cid   = (SELECT concept_id FROM concept_name WHERE name = 'Ruled Out Diagnosis'   AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
-SET @revised_cid            = (SELECT concept_id FROM concept_name WHERE name = 'Bahmni Diagnosis Revised' AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en');
+SET @visit_diagnoses_cid    = COALESCE((SELECT concept_id FROM concept_name WHERE name = 'Visit Diagnoses'        AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en'), (SELECT concept_id FROM concept_name WHERE name = 'Visit Diagnoses'        AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'es'));
+SET @coded_diag_cid         = COALESCE((SELECT concept_id FROM concept_name WHERE name = 'Coded Diagnosis'        AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en'), (SELECT concept_id FROM concept_name WHERE name = 'Coded Diagnosis'        AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'es'));
+SET @noncoded_diag_cid      = COALESCE((SELECT concept_id FROM concept_name WHERE name = 'Non-coded Diagnosis'    AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en'), (SELECT concept_id FROM concept_name WHERE name = 'Non-coded Diagnosis'    AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'es'));
+SET @certainty_cid          = COALESCE((SELECT concept_id FROM concept_name WHERE name = 'Diagnosis Certainty'    AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en'), (SELECT concept_id FROM concept_name WHERE name = 'Diagnosis Certainty'    AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'es'));
+SET @order_cid              = COALESCE((SELECT concept_id FROM concept_name WHERE name = 'Diagnosis order'        AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en'), (SELECT concept_id FROM concept_name WHERE name = 'Diagnosis order'        AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'es'));
+SET @confirmed_cid          = COALESCE((SELECT concept_id FROM concept_name WHERE name = 'Confirmed'              AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en'), (SELECT concept_id FROM concept_name WHERE name = 'Confirmed'              AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'es'));
+SET @primary_cid            = COALESCE((SELECT concept_id FROM concept_name WHERE name = 'Primary'                AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en'), (SELECT concept_id FROM concept_name WHERE name = 'Primary'                AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'es'));
+SET @secondary_cid          = COALESCE((SELECT concept_id FROM concept_name WHERE name = 'Secondary'              AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en'), (SELECT concept_id FROM concept_name WHERE name = 'Secondary'              AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'es'));
+SET @bahmni_diag_status_cid = COALESCE((SELECT concept_id FROM concept_name WHERE name = 'Bahmni Diagnosis Status' AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en'), (SELECT concept_id FROM concept_name WHERE name = 'Bahmni Diagnosis Status' AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'es'));
+SET @status_ruled_out_cid   = COALESCE((SELECT concept_id FROM concept_name WHERE name = 'Ruled Out Diagnosis'   AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en'), (SELECT concept_id FROM concept_name WHERE name = 'Ruled Out Diagnosis'   AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'es'));
+SET @revised_cid            = COALESCE((SELECT concept_id FROM concept_name WHERE name = 'Bahmni Diagnosis Revised' AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'en'), (SELECT concept_id FROM concept_name WHERE name = 'Bahmni Diagnosis Revised' AND concept_name_type = 'FULLY_SPECIFIED' AND locale_preferred = true AND locale = 'es'));
 "
 
 # ─── Header ───────────────────────────────────────────────────────────────────
@@ -194,6 +195,7 @@ FROM (
     SELECT 'Diagnosis order'                           UNION ALL
     SELECT 'Confirmed'                                 UNION ALL
     SELECT 'Primary'                                   UNION ALL
+    SELECT 'Secondary'                                 UNION ALL
     SELECT 'Bahmni Diagnosis Status'                   UNION ALL
     SELECT 'Ruled Out Diagnosis'                       UNION ALL
     SELECT 'Bahmni Diagnosis Revised'
@@ -203,7 +205,7 @@ WHERE NOT EXISTS (
     WHERE cn.name                = required.required_name
       AND cn.concept_name_type   = 'FULLY_SPECIFIED'
       AND cn.locale_preferred    = true
-      AND cn.locale              = 'en'
+      AND cn.locale              IN ('en', 'es')
 );
 " 2>"$STDERR_TMP")
 flush_stderr
@@ -361,7 +363,7 @@ WHERE parent.concept_id   = @visit_diagnoses_cid
       SELECT 1 FROM obs revised_obs
       INNER JOIN concept_name cn_rev
           ON  cn_rev.concept_id       = revised_obs.value_coded
-          AND cn_rev.locale           = 'en'
+          AND cn_rev.locale           IN ('en', 'es')
           AND cn_rev.locale_preferred = true
           AND cn_rev.name             = 'True'
       WHERE revised_obs.obs_group_id = parent.obs_id
@@ -389,15 +391,11 @@ else
     exit 1
 fi
 
-# ─── Dry-run count ────────────────────────────────────────────────────────────
-echo "  Counting records pending migration..."
-echo ""
-
-DRY_RUN_COUNT=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
-$SESSION_VARS
-SELECT COUNT(*)
-FROM obs parent
-WHERE parent.concept_id   = @visit_diagnoses_cid
+# ─── Shared "pending record" predicate ────────────────────────────────────────
+# Reused for the dry-run count and for density-based chunk boundaries below —
+# keeps both queries counting/scanning the exact same set of rows.
+PENDING_PREDICATE="
+  parent.concept_id   = @visit_diagnoses_cid
   AND parent.obs_group_id IS NULL
   AND parent.voided        = 0
   $RANGE_CONDITION
@@ -428,13 +426,24 @@ WHERE parent.concept_id   = @visit_diagnoses_cid
       SELECT 1 FROM obs revised_obs
       INNER JOIN concept_name cn_rev
           ON  cn_rev.concept_id       = revised_obs.value_coded
-          AND cn_rev.locale           = 'en'
+          AND cn_rev.locale           IN ('en', 'es')
           AND cn_rev.locale_preferred = true
           AND cn_rev.name             = 'True'
       WHERE revised_obs.obs_group_id = parent.obs_id
         AND revised_obs.concept_id   = @revised_cid
         AND revised_obs.voided       = 0
-  );
+  )
+"
+
+# ─── Dry-run count ────────────────────────────────────────────────────────────
+echo "  Counting records pending migration..."
+echo ""
+
+DRY_RUN_COUNT=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
+$SESSION_VARS
+SELECT COUNT(*)
+FROM obs parent
+WHERE $PENDING_PREDICATE;
 EOF
 )
 flush_stderr
@@ -446,7 +455,13 @@ else
     START_OBS_ID=$MIN_OBS_ID
 fi
 
-TOTAL_CHUNKS=$(( (MAX_OBS_ID - START_OBS_ID + CHUNK_SIZE) / CHUNK_SIZE ))
+# Estimated chunk count is based on actual pending rows, not raw obs_id span —
+# the obs_id range can be sparse (unrelated deletes/cleanup elsewhere in the
+# obs table), so ID-range-based estimates can wildly overstate the real work.
+TOTAL_CHUNKS=$(( (DRY_RUN_COUNT + CHUNK_SIZE - 1) / CHUNK_SIZE ))
+if [[ "$TOTAL_CHUNKS" -eq 0 ]]; then
+    TOTAL_CHUNKS=1
+fi
 
 echo "  Records pending migration : $(fmt_num "$DRY_RUN_COUNT")"
 echo "  obs_id range              : $(fmt_num "$MIN_OBS_ID") → $(fmt_num "$MAX_OBS_ID")"
@@ -490,9 +505,37 @@ CHUNK_NUM=0
 CURRENT_OBS_ID=$START_OBS_ID
 
 while [[ "$CURRENT_OBS_ID" -le "$MAX_OBS_ID" ]]; do
-    CHUNK_END=$(( CURRENT_OBS_ID + CHUNK_SIZE - 1 ))
-    if [[ "$CHUNK_END" -gt "$MAX_OBS_ID" ]]; then
-        CHUNK_END=$MAX_OBS_ID
+    # Pick the boundary by actual pending-row density, not raw obs_id arithmetic —
+    # obs_id gaps (unrelated deletes/cleanup elsewhere in the obs table) would
+    # otherwise make a fixed CHUNK_SIZE window cover far fewer than CHUNK_SIZE
+    # real rows, paying full connection/transaction overhead for little work.
+    set +e
+    CHUNK_END=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
+$SESSION_VARS
+SELECT MAX(t.obs_id) FROM (
+    SELECT parent.obs_id
+    FROM obs parent
+    WHERE $PENDING_PREDICATE
+      AND parent.obs_id >= $CURRENT_OBS_ID
+      AND parent.obs_id <= $MAX_OBS_ID
+    ORDER BY parent.obs_id
+    LIMIT $CHUNK_SIZE
+) t;
+EOF
+    )
+    BOUNDARY_EXIT=$?
+    set -e
+    flush_stderr
+
+    if [[ $BOUNDARY_EXIT -ne 0 ]]; then
+        log_error "Failed to compute next chunk boundary at obs_id $CURRENT_OBS_ID."
+        log_error "See $LOG_FILE for MySQL error details."
+        exit 1
+    fi
+
+    if [[ -z "$CHUNK_END" || "$CHUNK_END" == "NULL" ]]; then
+        log "No more pending records at or after obs_id $(fmt_num "$CURRENT_OBS_ID"). Ending migration early."
+        break
     fi
 
     CHUNK_NUM=$(( CHUNK_NUM + 1 ))
@@ -514,7 +557,11 @@ SELECT
     noncoded.value_text,
     parent.encounter_id,
     parent.person_id,
-    CASE WHEN order_obs.value_coded = @primary_cid THEN 1 ELSE 2 END,
+    CASE
+        WHEN order_obs.value_coded = @primary_cid THEN 1
+        WHEN order_obs.value_coded = @secondary_cid THEN 2
+        ELSE NULL
+    END,
     CASE WHEN certainty_obs.value_coded = @confirmed_cid THEN 'CONFIRMED' ELSE 'PROVISIONAL' END,
     parent.voided,
     NULL,
@@ -550,7 +597,7 @@ LEFT JOIN obs revised_obs
     AND revised_obs.voided       = 0
 LEFT JOIN concept_name cn_revised
     ON  cn_revised.concept_id       = revised_obs.value_coded
-    AND cn_revised.locale           = 'en'
+    AND cn_revised.locale           IN ('en', 'es')
     AND cn_revised.locale_preferred = true
 WHERE parent.concept_id   = @visit_diagnoses_cid
   AND parent.obs_group_id IS NULL

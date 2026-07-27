@@ -94,8 +94,10 @@ echo "  Taking backup..."
 echo ""
 
 DUMP_STDERR=$(mktemp /tmp/backup_stderr.XXXXXX)
+set +e
 $MYSQLDUMP_CMD --single-transaction --quick "$DB_NAME" obs encounter_diagnosis > "$BACKUP_FILE" 2>"$DUMP_STDERR"
 DUMP_EXIT=$?
+set -e
 
 if [[ $DUMP_EXIT -ne 0 ]]; then
     echo "  ERROR: mysqldump failed (exit code $DUMP_EXIT)."
