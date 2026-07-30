@@ -451,6 +451,7 @@ INSERT IGNORE INTO document_reference (
     uuid, status, doc_status, type_concept_id,
     subject_id, encounter_id, author_id,
     date_started, description, location_id,
+    master_identifier,
     creator, date_created, voided, voided_by, date_voided, void_reason
 )
 SELECT
@@ -472,6 +473,11 @@ SELECT
         LIMIT 1
     ), ''), 1, 255),
     enc.location_id,
+    CONCAT(
+      patient.patient_id, '-',
+      COALESCE(c.name, 'Document'), '-',
+      parent.obs_id
+    ),
     parent.creator,
     parent.date_created,
     parent.voided,
@@ -481,6 +487,8 @@ SELECT
 FROM obs parent
     INNER JOIN patient ON patient.patient_id = parent.person_id
     INNER JOIN encounter enc ON parent.encounter_id = enc.encounter_id
+
+    LEFT JOIN concept_name c ON c.concept_id = parent.concept_id AND c.concept_name_type = 'FULLY_SPECIFIED' AND c.locale_preferred = true
     LEFT JOIN (
         SELECT encounter_id, MIN(provider_id) AS provider_id
         FROM encounter_provider

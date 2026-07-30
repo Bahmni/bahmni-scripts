@@ -21,6 +21,30 @@ This migration script copies legacy documents from the old table structure into 
 
 ---
 
+## 1.5 Document Identifier (masterIdentifier)
+
+Each migrated document receives a **masterIdentifier** to identify it in the new FHIR system.
+
+**Format:** `{PatientID}-{DocumentType}-{ObsID}`
+
+**Examples:**
+- `10-Prescription-304018` — Patient 10's Prescription (obs_id 304018)
+- `20-Radiology Report-512345` — Patient 20's Radiology Report (obs_id 512345)
+- `15-Patient File-89012` — Patient 15's Patient File (obs_id 89012)
+
+**How it's Generated:**
+- **Patient ID:** The patient number associated with the document (e.g., patient 10, patient 20)
+- **Document Type:** The category of the document (e.g., Prescription, Radiology Report, Patient File)
+- **Shortened Obs ID:** A unique number from the database that ensures no two documents share the same identifier
+
+**Why This Format:**
+-  **Guaranteed Unique** — obs_id is the database primary key, ensuring no duplicates
+-  **User-Meaningful** — Patient ID and document type visible for clinical context
+-  **Robust** — Works reliably across migration chunks and resumable migrations
+-  **FHIR Compliant** — Serves as FHIR masterIdentifier business identifier
+
+---
+
 ## 2. Before You Begin
 
 ### Prerequisites
@@ -65,6 +89,10 @@ A checkpoint file saves progress. Re-run the script and choose "yes" to resume �
 ### Standard Document
 Parent obs with file path and category (Prescription, Patient File, Radiology, etc.)
 * **Result:** Migrated with category preserved — same category displays in new UI
+* **masterIdentifier:** Auto-generated as `{PatientID}-{DocCategory}-{ObsID}`
+  - Example: `10-Prescription-304018`, `20-Radiology Report-512345`
+  - Guarantees global uniqueness via obs_id primary key
+  - Includes patient context for clinical relevance
 
 ### Document with Comments
 Child obs has comments/notes attached
@@ -81,6 +109,7 @@ Obs marked as voided (deleted)
 ### Re-running Migration
 Migration already completed
 * **Result:** No duplicates created — safe to re-run anytime
+* **Note:** masterIdentifier format remains consistent across re-runs
 
 ---
 
