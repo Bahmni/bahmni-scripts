@@ -180,7 +180,7 @@ WHERE obs_group_id IS NULL
                 AND child.concept_id = @document_cid
           )
             AND parent.uuid IN (SELECT uuid FROM document_reference)
-      ) AS obs
+      ) AS parent
   );
 
 COMMIT;
