@@ -128,12 +128,14 @@ if [[ "$CONFIRM" != "yes" ]]; then
     exit 0
 fi
 
-# --- Run rollback for document_reference_content first ------------------------
-echo "  Deleting document_reference_content rows..."
+# --- Run rollback (both deletes in atomic transaction) -------------------------
+echo "  Rolling back document_reference rows..."
 echo ""
 
 "${MYSQL_CMD[@]}" -e "
 $SESSION_VARS
+START TRANSACTION;
+
 DELETE drc
 FROM document_reference_content drc
 WHERE drc.document_reference_id IN (
@@ -147,14 +149,7 @@ WHERE drc.document_reference_id IN (
             AND child.concept_id = @document_cid
       )
 );
-"
 
-# --- Run rollback for document_reference ----------------------------------------
-echo "  Deleting document_reference rows..."
-echo ""
-
-"${MYSQL_CMD[@]}" -e "
-$SESSION_VARS
 DELETE dr
 FROM document_reference dr
 INNER JOIN obs parent ON dr.uuid = parent.uuid
@@ -164,6 +159,8 @@ WHERE parent.obs_group_id IS NULL
       WHERE child.obs_group_id = parent.obs_id
         AND child.concept_id = @document_cid
   );
+
+COMMIT;
 "
 
 # --- Verify ------------------------------------------------------------------
