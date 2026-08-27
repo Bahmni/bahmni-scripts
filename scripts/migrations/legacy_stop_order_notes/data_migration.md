@@ -37,6 +37,14 @@ core-module Liquibase changeset — following the same pattern as the existing
 
 * **MySQL client installed** — required if connecting directly to the
   database. Verify with `mysql --version`.
+* **MySQL 5.7.8+ or MariaDB 10.2.3+** — Step 2 (Section 5) uses `JSON_EXTRACT`
+  and `JSON_UNQUOTE`, which do not exist on older versions (MySQL 5.6 /
+  MariaDB 10.0–10.1, both seen in older Bahmni deployments). On an
+  unsupported version, that step's chunk will fail with
+  `FUNCTION ... does not exist` and roll back cleanly (see Section 4 — a
+  failed chunk never partially applies), but the migration cannot proceed
+  until the database is upgraded. Verify with `SELECT VERSION();` before
+  running.
 * **Docker installed and running** — required if the database is inside a
   Docker container. Verify with `docker ps`.
 * **Database access** — a MySQL username and password with read and write
@@ -160,8 +168,10 @@ for you, reusing the same credentials — it takes a `mysqldump` of `orders` and
 `drug_order`), written next to the script as `backup_BAH-4996_<timestamp>.sql`
 and validated (non-empty, contains the `-- Dump completed` footer). If the
 backup fails validation, the migration aborts with no changes made. If you
-answer `no`, migration proceeds without a backup — you won't be able to use
-`data-rollback-legacy-stop-notes.sh` afterward unless you took one some other way.
+answer `no`, migration proceeds without a backup — `data-rollback-legacy-stop-notes.sh`
+still works afterward regardless (it's log-driven, not backup-driven — see
+Section 8); skipping this step only means you have no extra full-table
+safety net beyond the batch-scoped rollback.
 
 #### Step 6 — Migration runs, one chunk at a time
 The pending `order_id` range is split into chunks of `-s` size (default

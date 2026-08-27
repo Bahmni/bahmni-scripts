@@ -50,10 +50,15 @@ fi
 BACKUP_FILE="$(dirname "${BASH_SOURCE[0]}")/backup_BAH-4996_$(date +%Y%m%d_%H%M%S).sql"
 
 # ─── Build mysqldump command ──────────────────────────────────────────────────
+# Use bash arrays + MYSQL_PWD env var (not -p$DB_PASS / -e MYSQL_PWD=$DB_PASS)
+# so the password never appears in the process list (ps aux / docker inspect)
+# and never gets word-split on special characters — matches the pattern
+# already used by the other 3 scripts in this directory.
+export MYSQL_PWD="$DB_PASS"
 if [[ -n "$DOCKER_CONTAINER" ]]; then
-    MYSQLDUMP_CMD="docker exec -e MYSQL_PWD=$DB_PASS $DOCKER_CONTAINER mysqldump -u $DB_USER"
+    MYSQLDUMP_CMD=(docker exec -e MYSQL_PWD "$DOCKER_CONTAINER" mysqldump -u "$DB_USER")
 else
-    MYSQLDUMP_CMD="mysqldump -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS"
+    MYSQLDUMP_CMD=(mysqldump -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER")
 fi
 
 # ─── Header ───────────────────────────────────────────────────────────────────
@@ -95,7 +100,7 @@ echo ""
 # embed non-fatal mysqldump warnings as invalid SQL, breaking restore.
 DUMP_STDERR=$(mktemp)
 set +e
-$MYSQLDUMP_CMD \
+"${MYSQLDUMP_CMD[@]}" \
     --single-transaction \
     --quick \
     "$DB_NAME" \
