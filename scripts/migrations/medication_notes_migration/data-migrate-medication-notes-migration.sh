@@ -27,7 +27,7 @@ usage() {
     echo "  -s chunk_size : rows processed per order_id-range chunk/transaction"
     echo "                  (default: 5000, must be a positive integer)"
     echo ""
-    echo "  This script does not own backup logic — data-backup-legacy-stop-notes.sh"
+    echo "  This script does not own backup logic — data-backup-medication-notes-migration.sh"
     echo "  does. It will optionally offer to run that script for you before migrating."
     echo ""
     exit 1
@@ -204,7 +204,7 @@ echo "  - MODE       : Full (all pending) or Batch (specify an order_id range)"
 echo "  - CHUNKED    : processed in order_id-range chunks of $(fmt_num "$CHUNK_SIZE"), one transaction per chunk"
 echo "  - IDEMPOTENT : comment_to_fulfiller IS NULL guards; re-running updates 0 rows"
 echo "  - READ-ONLY  : dosing_instructions and order_reason_non_coded are only ever read, never modified"
-echo "  - BATCH LOG  : each run tags a batch ID; roll back with data-rollback-legacy-stop-notes.sh -b <batch_id>"
+echo "  - BATCH LOG  : each run tags a batch ID; roll back with data-rollback-medication-notes-migration.sh -b <batch_id>"
 echo ""
 if [[ -n "$DOCKER_CONTAINER" ]]; then
     echo "  Mode    : Docker ($DOCKER_CONTAINER)"
@@ -452,15 +452,31 @@ if [[ "$CONFIRM" != "yes" ]]; then
 fi
 
 # ─── Optional backup ──────────────────────────────────────────────────────────
-# This script does not take its own backup — data-backup-legacy-stop-notes.sh
+# This script does not take its own backup — data-backup-medication-notes-migration.sh
 # owns that logic (single source of truth, matches the other migrations'
 # convention of a standalone backup script). It can optionally be invoked here
 # for convenience, using the same connection details already gathered above.
-BACKUP_SCRIPT="$SCRIPT_DIR/data-backup-legacy-stop-notes.sh"
+BACKUP_SCRIPT="$SCRIPT_DIR/data-backup-medication-notes-migration.sh"
 BACKUP_FILE=""
 
-if [[ -x "$BACKUP_SCRIPT" ]]; then
-    read -r -p "  Run data-backup-legacy-stop-notes.sh now before migrating? [yes/no]: " RUN_BACKUP
+if [[ ! -e "$BACKUP_SCRIPT" ]]; then
+    log_error "Backup script not found at $BACKUP_SCRIPT — cannot offer a pre-migration backup."
+    read -r -p "  Continue WITHOUT a backup? [yes/no]: " CONTINUE_NO_BACKUP
+    echo ""
+    if [[ "$CONTINUE_NO_BACKUP" != "yes" ]]; then
+        log "Migration cancelled by user (no backup available)."
+        exit 0
+    fi
+elif [[ ! -x "$BACKUP_SCRIPT" ]]; then
+    log_error "Backup script found but is not executable: $BACKUP_SCRIPT (run: chmod +x \"$BACKUP_SCRIPT\")."
+    read -r -p "  Continue WITHOUT a backup? [yes/no]: " CONTINUE_NO_BACKUP
+    echo ""
+    if [[ "$CONTINUE_NO_BACKUP" != "yes" ]]; then
+        log "Migration cancelled by user (no backup available)."
+        exit 0
+    fi
+else
+    read -r -p "  Run data-backup-medication-notes-migration.sh now before migrating? [yes/no]: " RUN_BACKUP
     echo ""
     if [[ "$RUN_BACKUP" == "yes" ]]; then
         BACKUP_ARGS=(-u "$DB_USER" -p "$DB_PASS" -d "$DB_NAME")
@@ -481,7 +497,7 @@ if [[ -x "$BACKUP_SCRIPT" ]]; then
         log "Backup complete: $BACKUP_FILE"
         echo ""
     else
-        echo "  Skipping backup — proceeding without one. Run data-backup-legacy-stop-notes.sh"
+        echo "  Skipping backup — proceeding without one. Run data-backup-medication-notes-migration.sh"
         echo "  separately first if you want rollback safety."
         echo ""
     fi
@@ -624,5 +640,5 @@ if [[ -n "$BACKUP_FILE" ]]; then
     echo ""
 fi
 echo "  To roll back this batch run:"
-echo "    ./data-rollback-legacy-stop-notes.sh -u $DB_USER -d $DB_NAME -b $BATCH_ID"
+echo "    ./data-rollback-medication-notes-migration.sh -u $DB_USER -d $DB_NAME -b $BATCH_ID"
 echo ""

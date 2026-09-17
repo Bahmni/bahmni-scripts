@@ -51,7 +51,7 @@ core-module Liquibase changeset — following the same pattern as the existing
   access to the OpenMRS database.
 * **Backup is optional but recommended** — rollback here is batch-scoped and
   driven by a migration log table (see Section 8), so a `mysqldump` backup is
-  no longer required to undo a run. `data-backup-legacy-stop-notes.sh` still
+  no longer required to undo a run. `data-backup-medication-notes-migration.sh` still
   exists as an extra safety net and can optionally be invoked from the
   migrate script when prompted (see Section 3).
 
@@ -68,30 +68,30 @@ Four standalone scripts live in this directory, matching the convention used
 by the other migrations in this repo (e.g. `legacy_diagnostic_reports/`):
 
 ```
-data-backup-legacy-stop-notes.sh    — takes a targeted mysqldump of orders + drug_order (optional safety net)
-data-migrate-legacy-stop-notes.sh   — dry-run, choose Full/Batch, confirm, run the 2 UPDATEs
-data-rollback-legacy-stop-notes.sh  — batch-scoped undo, driven by the migration log table
-data-audit-legacy-stop-notes.sh     — read-only before/after coverage report
+data-backup-medication-notes-migration.sh    — takes a targeted mysqldump of orders + drug_order (optional safety net)
+data-migrate-medication-notes-migration.sh   — dry-run, choose Full/Batch, confirm, run the 2 UPDATEs
+data-rollback-medication-notes-migration.sh  — batch-scoped undo, driven by the migration log table
+data-audit-medication-notes-migration.sh     — read-only before/after coverage report
 ```
 
 ### Recommended: run the backup script first
 
 ```bash
-./data-backup-legacy-stop-notes.sh -u <username> -p <password> -d <dbname> -c <container>
+./data-backup-medication-notes-migration.sh -u <username> -p <password> -d <dbname> -c <container>
 ```
 
 ### Then run the migration
 
 ```bash
-./data-migrate-legacy-stop-notes.sh -u <username> -p <password> -d <dbname> -c <container>
+./data-migrate-medication-notes-migration.sh -u <username> -p <password> -d <dbname> -c <container>
 
 # Optionally control chunk size (default 5000, must be a positive integer):
-./data-migrate-legacy-stop-notes.sh -u <username> -p <password> -d <dbname> -c <container> -s 2000
+./data-migrate-medication-notes-migration.sh -u <username> -p <password> -d <dbname> -c <container> -s 2000
 ```
 
 The script is fully interactive — any flag not passed is prompted for. If you
 skipped the backup step above, the migrate script will offer to run
-`data-backup-legacy-stop-notes.sh` for you (using the same credentials) before
+`data-backup-medication-notes-migration.sh` for you (using the same credentials) before
 proceeding — see Step 5 below. You can also skip it entirely and take your own
 backup through other means.
 
@@ -158,9 +158,9 @@ Type `yes` to proceed. Anything else cancels with no changes made.
 
 #### Step 5 — Optional backup
 ```text
-Run data-backup-legacy-stop-notes.sh now before migrating? [yes/no]:
+Run data-backup-medication-notes-migration.sh now before migrating? [yes/no]:
 ```
-If you already ran `data-backup-legacy-stop-notes.sh` yourself (recommended),
+If you already ran `data-backup-medication-notes-migration.sh` yourself (recommended),
 answer `no` here. Otherwise answer `yes` and the migrate script will invoke it
 for you, reusing the same credentials — it takes a `mysqldump` of `orders` and
 `drug_order` (both tables are dumped because the migration *reads*
@@ -168,7 +168,7 @@ for you, reusing the same credentials — it takes a `mysqldump` of `orders` and
 `drug_order`), written next to the script as `backup_BAH-4996_<timestamp>.sql`
 and validated (non-empty, contains the `-- Dump completed` footer). If the
 backup fails validation, the migration aborts with no changes made. If you
-answer `no`, migration proceeds without a backup — `data-rollback-legacy-stop-notes.sh`
+answer `no`, migration proceeds without a backup — `data-rollback-medication-notes-migration.sh`
 still works afterward regardless (it's log-driven, not backup-driven — see
 Section 8); skipping this step only means you have no extra full-table
 safety net beyond the batch-scoped rollback.
@@ -200,7 +200,7 @@ INFO   Chunk 2/48 done (order_id 5,004-10,003): step1=3 step2=0
 └──────────────────────────────────────────────────────────────┘
 
 To roll back this batch run:
-  ./data-rollback-legacy-stop-notes.sh -u <username> -d <dbname> -b 550e8400-e29b-...
+  ./data-rollback-medication-notes-migration.sh -u <username> -d <dbname> -b 550e8400-e29b-...
 ```
 Row counts are totals summed across all chunks. The printed rollback command
 is ready to copy-paste — see Section 8.
@@ -211,7 +211,7 @@ is ready to copy-paste — see Section 8.
 |---|---|---|
 | **Terminal (screen)** | Interactive prompts, dry-run counts, confirmation, migration summary. | No |
 | **Log file** (`migration_BAH-4996_YYYYMMDD.log`, next to the script) | Every `INFO` line, plus raw MySQL error output for any failed query. Check this file if the script exits unexpectedly with no visible error. | Yes — one file per calendar day |
-| **Backup file** (`backup_BAH-4996_<timestamp>.sql`, next to the script) | An optional targeted `mysqldump` of `orders` and `drug_order`, produced by `data-backup-legacy-stop-notes.sh` (run standalone, or invoked from the migrate script when you answer `yes` at Step 5). Not required for rollback — see Section 8 — but useful as an extra safety net. Absent if you skipped this step. | Yes — kept until you delete it |
+| **Backup file** (`backup_BAH-4996_<timestamp>.sql`, next to the script) | An optional targeted `mysqldump` of `orders` and `drug_order`, produced by `data-backup-medication-notes-migration.sh` (run standalone, or invoked from the migrate script when you answer `yes` at Step 5). Not required for rollback — see Section 8 — but useful as an extra safety net. Absent if you skipped this step. | Yes — kept until you delete it |
 | **Checkpoint file** (`stop_notes_checkpoint_<dbname>.txt`, next to the script) | The batch ID, order_id range, and the `order_id` at which the last successfully-committed chunk ended. Only present while a run is incomplete — see Section 4. | Only if the run is interrupted before completing |
 | **Migration log table** (`stop_order_notes_migration_log`, in the database) | One row per `(batch_id, order_id, step)` actually updated by any run. Drives the rollback script — see Section 8. | Yes — until rolled back or manually cleared |
 
@@ -356,10 +356,10 @@ of `0` and exit immediately with no changes.
 
 ```bash
 # List available batches and pick one interactively:
-./data-rollback-legacy-stop-notes.sh -u <username> -p <password> -d <dbname> -c <container>
+./data-rollback-medication-notes-migration.sh -u <username> -p <password> -d <dbname> -c <container>
 
 # Or roll back a specific batch directly:
-./data-rollback-legacy-stop-notes.sh -u <username> -p <password> -d <dbname> -c <container> -b <batch_id>
+./data-rollback-medication-notes-migration.sh -u <username> -p <password> -d <dbname> -c <container> -b <batch_id>
 ```
 
 ### Why this is possible despite both steps being blind UPDATEs
@@ -379,7 +379,7 @@ even if a chunk fails and rolls back.
 
 ### How rollback works
 
-1. `data-rollback-legacy-stop-notes.sh` checks that
+1. `data-rollback-medication-notes-migration.sh` checks that
    `stop_order_notes_migration_log` exists (i.e. the migration has run at
    least once).
 2. If `-b <batch_id>` is not given, it lists every batch on record (rows
@@ -399,7 +399,7 @@ This means:
 * **Only the rows this specific batch touched are affected** — rows touched
   by other batches, or edited through the application after migration, are
   untouched (they're identified by `batch_id`, not by column value).
-* **No backup file is required.** `data-backup-legacy-stop-notes.sh` still
+* **No backup file is required.** `data-backup-medication-notes-migration.sh` still
   exists and can be run beforehand as an extra safety net (e.g. against a
   scenario outside this migration's control, like manual `UPDATE`s run by
   someone else), but the rollback script itself never reads it.
@@ -407,7 +407,7 @@ This means:
   rollback, matching the fact that the migration never modifies them either.
 
 Only run the rollback script once you've confirmed (via the batch listing or
-`data-audit-legacy-stop-notes.sh`) that the batch ID you're targeting is the
+`data-audit-medication-notes-migration.sh`) that the batch ID you're targeting is the
 one you actually want undone.
 
 ---
@@ -415,7 +415,7 @@ one you actually want undone.
 ## 9. Audit Script
 
 ```bash
-./data-audit-legacy-stop-notes.sh -u <username> -p <password> -d <dbname> -c <container>
+./data-audit-medication-notes-migration.sh -u <username> -p <password> -d <dbname> -c <container>
 ```
 
 A read-only report — it runs no `INSERT`/`UPDATE`/`DELETE` and does not
