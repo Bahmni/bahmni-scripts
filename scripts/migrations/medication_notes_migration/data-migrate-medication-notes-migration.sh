@@ -640,5 +640,9 @@ if [[ -n "$BACKUP_FILE" ]]; then
     echo ""
 fi
 echo "  To roll back this batch run:"
-echo "    ./data-rollback-medication-notes-migration.sh -u $DB_USER -d $DB_NAME -b $BATCH_ID"
+if [[ -n "$DOCKER_CONTAINER" ]]; then
+    echo "    ./data-rollback-medication-notes-migration.sh -u $DB_USER -d $DB_NAME -b $BATCH_ID -c $DOCKER_CONTAINER"
+else
+    echo "    ./data-rollback-medication-notes-migration.sh -u $DB_USER -d $DB_NAME -b $BATCH_ID -h $DB_HOST -P $DB_PORT"
+fi
 echo ""
