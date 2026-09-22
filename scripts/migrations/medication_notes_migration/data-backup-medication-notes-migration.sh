@@ -56,7 +56,10 @@ BACKUP_FILE="$(dirname "${BASH_SOURCE[0]}")/backup_BAH-4996_$(date +%Y%m%d_%H%M%
 # already used by the other 3 scripts in this directory.
 export MYSQL_PWD="$DB_PASS"
 if [[ -n "$DOCKER_CONTAINER" ]]; then
-    MYSQLDUMP_CMD=(docker exec -e MYSQL_PWD "$DOCKER_CONTAINER" mysqldump -u "$DB_USER")
+    # Force TCP to 127.0.0.1 instead of letting mysqldump fall back to the
+    # local unix socket (/var/lib/mysql/mysql.sock), which may not match the
+    # socket path of the mysqld actually running in this container.
+    MYSQLDUMP_CMD=(docker exec -e MYSQL_PWD "$DOCKER_CONTAINER" mysqldump -h 127.0.0.1 --protocol=tcp -u "$DB_USER")
 else
     MYSQLDUMP_CMD=(mysqldump -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER")
 fi
@@ -103,6 +106,7 @@ set +e
 "${MYSQLDUMP_CMD[@]}" \
     --single-transaction \
     --quick \
+    --no-tablespaces \
     "$DB_NAME" \
     orders \
     drug_order \
