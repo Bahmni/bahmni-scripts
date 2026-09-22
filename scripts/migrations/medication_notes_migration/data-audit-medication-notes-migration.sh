@@ -174,7 +174,7 @@ if [[ "$TOTAL_PENDING" -eq 0 && "$TOTAL_ELIGIBLE" -gt 0 ]]; then
     echo "  COMPLETE — All $(fmt_num "$TOTAL_ELIGIBLE") eligible drug order notes have been migrated."
 elif [[ "$TOTAL_PENDING" -gt 0 ]]; then
     echo "  INCOMPLETE — $(fmt_num "$TOTAL_PENDING") drug order note(s) still pending migration."
-    echo "  Run data-migrate-legacy-stop-notes.sh to process remaining rows."
+    echo "  Run data-migrate-medication-notes-migration.sh to process remaining rows."
 else
     echo "  No eligible drug order notes found in this database."
 fi
