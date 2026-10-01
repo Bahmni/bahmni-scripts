@@ -35,7 +35,7 @@ Before running the migration, ensure the following are in place:
 Run the backup script before anything else:
 
 ```bash
-./diagnoses/data-backup-legacy-diagnoses.sh -u <username> -p <password> -d <dbname> -c <container> 
+./data-backup-legacy-diagnoses.sh -u <username> -p <password> -d <dbname> -c <container> 
 ```
 
 The backup protects you if anything goes wrong. The migration script itself is safe to re-run — it will never create duplicates — but having a backup allows a clean rollback if needed.
@@ -50,7 +50,7 @@ The backup protects you if anything goes wrong. The migration script itself is s
 Run the script from the migrations directory:
 
 ```bash
-./diagnoses/data-migrate-legacy-diagnoses.sh -u <username> -p <password> -d <dbname> -c <container> 
+./data-migrate-legacy-diagnoses.sh -u <username> -p <password> -d <dbname> -c <container> 
 ```
 
 The script is fully interactive — it will prompt for all required inputs one by one.
@@ -200,7 +200,7 @@ After migration, the legacy diagnosis records remain in the `obs` table. This is
 If, after a sufficient retention period and with explicit clinical and compliance approval, you wish to reclaim disk space by removing the migrated records from `obs`, run:
 
 ```bash
-./diagnoses/delete-migrated-legacy-diagnoses.sh -b <backup_file> -u <username> -p <password> -d <dbname> -c <container>
+./delete-migrated-legacy-diagnoses.sh -b <backup_file> -u <username> -p <password> -d <dbname> -c <container>
 ```
 
 ### Prerequisites Before Running the Delete Script
