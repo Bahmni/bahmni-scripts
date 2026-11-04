@@ -19,6 +19,8 @@ truncate table order_group;
 truncate table encounter;  
 truncate table appointmentscheduling_appointment;
 truncate table appointmentscheduling_appointment_status_history;
+truncate table patient_appointment_audit;
+truncate table patient_appointment;
 truncate table visit_attribute;
 truncate table visit; 
 truncate table patient_identifier;
