@@ -10,6 +10,7 @@
 7. Idempotency
 8. Rollback — Batch-Scoped, Log-Driven (Deletes, Not Restores)
 9. Audit Script
+10. Generating Test Data
 
 ---
 
@@ -460,3 +461,76 @@ COMPLETED` vs. still open (`NULL`) — if `legacy_disposition_migration_log`
 exists, or notes that the migration hasn't run yet if it doesn't. It finishes
 with a plain-language verdict: `COMPLETE`, `INCOMPLETE` (with a pending
 count), or "no eligible rows found."
+
+---
+
+## 10. Generating Test Data
+
+`generate-test-data-legacy-disposition-migration.sql` creates realistic bulk
+test data — by default 100,000 disposition "cases" (visit + Consultation
+encounter + Disposition obs, grouped under a parent "Disposition Concept Set"
+obs exactly as the real legacy shape requires — see Section 6).
+
+```bash
+mysql -u <username> -p <dbname> <<'SQL'
+SET @NUM_CASES = 100000;
+source generate-test-data-legacy-disposition-migration.sql
+SQL
+```
+
+(Or from a `mysql` prompt / Docker exec: set `@NUM_CASES`, then `source` the
+file — see the comment header in the script for the exact two-line usage,
+matching `generate-test-data-medication-notes-migration.sql`'s convention.)
+
+### What it covers
+
+Cases are split into 20 buckets covering, in combination:
+
+* **All four disposition types** — Admit, Discharge, Transfer, Undo
+  Discharge — each using the real emrapi-mapped answer concept, so the
+  migration resolves each type exactly the way it would resolve real data.
+* **With and without a Disposition Note** — sibling obs present or absent.
+* **Voided vs. not voided** — a voided bucket proves the migration correctly
+  skips voided source data entirely.
+* **Fulfillment state** — the part most worth stress-testing, since it's new
+  logic (see Section 5):
+  * `FULFILLED_AFTER` — a real fulfilling encounter (ADMISSION / DISCHARGE /
+    TRANSFER, or for Undo Discharge, a DISCHARGE encounter voided afterward)
+    exists **after** the disposition's date. Migrated order should come out
+    `fulfiller_status = COMPLETED`.
+  * `NOT_FULFILLED` — no fulfilling encounter at all. Should stay `NULL`
+    (open).
+  * `FULFILLED_BEFORE` — a fulfilling encounter of the right type exists, but
+    **before** the disposition's date — i.e. it belongs to an earlier cycle
+    in the same visit, not this one. Should still read as `NULL` (open).
+    This bucket exists specifically to catch a date-comparison bug (e.g.
+    `>=` instead of `>`, or comparing the wrong column) that a
+    fulfilled-vs-not-fulfilled-only dataset would never surface.
+
+### Why a scratch tracking table, not a tag convention
+
+Every visit this script creates is recorded in `test_bah5286_bulk_visits`
+(created if missing). Cleanup and any ad hoc verification query can join
+against this table directly, rather than relying on parsing a
+`TEST-BAH5286-BULK-%` comment/order_number convention (which this script also
+sets, for convenience, on every obs/encounter it creates — but the tracking
+table is the authoritative way to find everything).
+
+### Cleanup
+
+```sql
+DELETE FROM obs WHERE encounter_id IN (
+  SELECT encounter_id FROM encounter WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits)
+);
+DELETE FROM encounter WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits);
+DELETE FROM visit WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits);
+DROP TABLE IF EXISTS test_bah5286_bulk_visits;
+```
+
+If you also ran the migration against this test data, roll that back first
+(Section 8) — rolling back after deleting the source obs would leave the log
+table referencing obs that no longer exist (harmless, but untidy):
+
+```bash
+./data-rollback-legacy-disposition-migration.sh -u <username> -d <dbname> -b <batch_id>
+```
