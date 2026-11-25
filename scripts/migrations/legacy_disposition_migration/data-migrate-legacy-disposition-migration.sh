@@ -254,6 +254,17 @@ EOF
 )
 flush_stderr
 
+FALLBACK_PROVIDER_ID=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
+SELECT provider_id FROM provider WHERE retired = 0 ORDER BY provider_id LIMIT 1;
+EOF
+)
+flush_stderr
+
+if [[ -z "$FALLBACK_PROVIDER_ID" ]]; then
+    log_error "No unretired provider found. 'orderer' is NOT NULL on orders — at least one provider must exist to run this migration."
+    exit 1
+fi
+
 if [[ -z "$OUTPATIENT_CARE_SETTING_ID" ]]; then
     log_error "No OUTPATIENT care_setting found. This is a core OpenMRS seed and should always exist."
     exit 1
@@ -287,7 +298,7 @@ if [[ -z "$DISPOSITION_CONCEPT_ID" ]]; then
     exit 0
 fi
 
-log "ADT Order order_type_id=$ADT_ORDER_TYPE_ID, Outpatient care_setting_id=$OUTPATIENT_CARE_SETTING_ID, Disposition concept_id=$DISPOSITION_CONCEPT_ID"
+log "ADT Order order_type_id=$ADT_ORDER_TYPE_ID, Outpatient care_setting_id=$OUTPATIENT_CARE_SETTING_ID, Disposition concept_id=$DISPOSITION_CONCEPT_ID, fallback provider_id=$FALLBACK_PROVIDER_ID"
 
 # ─── Fulfillment rules (fhir2Extension.adtDispositionRules) ────────────────────
 # A migrated order should read as COMPLETED, not open/active, if the
@@ -667,19 +678,6 @@ else
     fi
 fi
 
-# ─── order_number seed ─────────────────────────────────────────────────────────
-# Monotonic counter seeded past anything already in `orders`, so generated
-# order_numbers never collide with OpenMRS's own ORD-<seed> sequence or with
-# a previous run of this script. Prefixed distinctly (ORD-MIG-) so migrated
-# orders are trivially identifiable as such if ever needed.
-ORDER_NUMBER_SEED=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
-SELECT COALESCE(MAX(CAST(SUBSTRING_INDEX(order_number, '-', -1) AS UNSIGNED)), 0) + 1
-FROM orders WHERE order_number LIKE 'ORD-MIG-%';
-EOF
-)
-flush_stderr
-ORDER_NUMBER_SEED=${ORDER_NUMBER_SEED:-1}
-
 # ─── Chunked migration loop ────────────────────────────────────────────────────
 echo "  Running migration..."
 echo ""
@@ -700,7 +698,6 @@ while [[ "$CURRENT_OBS_ID" -le "$MAX_OBS_ID" ]]; do
     CHUNK_OUTPUT=$("${MYSQL_PIPE_CMD[@]}" --skip-column-names 2>"$STDERR_TMP" <<EOF
 START TRANSACTION;
 
-SET @order_number_seed = $ORDER_NUMBER_SEED;
 SET @now = NOW();
 
 -- Rows of this chunk still pending, with the answer concept + sibling note
@@ -721,8 +718,7 @@ SELECT
     d.date_created AS date_activated,
     d.creator      AS creator_user_id,
     n.value_text   AS note_text,
-    crt.code       AS disposition_code,
-    (@order_number_seed := @order_number_seed + 1) AS order_seq
+    crt.code       AS disposition_code
 FROM obs d
 JOIN encounter e ON e.encounter_id = d.encounter_id
 LEFT JOIN obs n
@@ -740,6 +736,10 @@ WHERE d.concept_id = $DISPOSITION_CONCEPT_ID
   AND d.obs_id BETWEEN $CURRENT_OBS_ID AND $CHUNK_END
   AND NOT EXISTS (SELECT 1 FROM legacy_disposition_migration_log log WHERE log.source_obs_id = d.obs_id);
 
+-- order_number uses the source obs_id directly (globally unique, already
+-- known, no separate counter needed) instead of a bash-tracked sequence —
+-- a per-chunk SQL session variable reset every chunk previously minted
+-- colliding order_numbers across chunks under high volume.
 INSERT INTO orders (
     uuid, order_type_id, concept_id, patient_id, encounter_id, care_setting,
     orderer, urgency, scheduled_date, date_activated, comment_to_fulfiller,
@@ -753,16 +753,22 @@ SELECT
     p.encounter_id,
     $OUTPATIENT_CARE_SETTING_ID,
     -- orderer: the provider record for the obs creator's person, same join
-    -- used elsewhere in bahmni-core's direct-SQL provider lookups
-    (SELECT pr.provider_id FROM provider pr
-       JOIN users u ON u.user_id = p.creator_user_id
-      WHERE pr.person_id = u.person_id AND pr.retired = 0
-      ORDER BY pr.provider_id LIMIT 1),
+    -- used elsewhere in bahmni-core's direct-SQL provider lookups. orderer is
+    -- NOT NULL on the orders table, and legacy data can have obs created by a pure
+    -- admin/system user with no provider record (e.g. user_id 1) — fall back
+    -- to a fixed default provider rather than failing the whole chunk.
+    COALESCE(
+      (SELECT pr.provider_id FROM provider pr
+         JOIN users u ON u.user_id = p.creator_user_id
+        WHERE pr.person_id = u.person_id AND pr.retired = 0
+        ORDER BY pr.provider_id LIMIT 1),
+      $FALLBACK_PROVIDER_ID
+    ),
     'ON_SCHEDULED_DATE',
     p.scheduled_date,
     p.date_activated,
     p.note_text,
-    CONCAT('ORD-MIG-', p.order_seq),
+    CONCAT('ORD-MIG-', p.source_obs_id),
     'NEW',
     1,
     @now,
@@ -777,7 +783,7 @@ INSERT INTO legacy_disposition_migration_log
     (batch_id, source_obs_id, source_obs_uuid, migrated_order_id, migrated_order_uuid, migrated_at)
 SELECT '$BATCH_ID', p.source_obs_id, p.source_obs_uuid, o.order_id, o.uuid, @now
 FROM tmp_pending p
-JOIN orders o ON o.order_number = CONCAT('ORD-MIG-', p.order_seq);
+JOIN orders o ON o.order_number = CONCAT('ORD-MIG-', p.source_obs_id);
 
 DROP TEMPORARY TABLE IF EXISTS tmp_pending;
 

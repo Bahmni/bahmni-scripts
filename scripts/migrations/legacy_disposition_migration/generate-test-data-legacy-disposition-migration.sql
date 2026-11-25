@@ -18,14 +18,20 @@
 --   SET @NUM_CASES = 100000;
 --   source generate-test-data-legacy-disposition-migration.sql
 --
--- Cleanup after testing:
---   DELETE FROM obs WHERE encounter_id IN (
---     SELECT encounter_id FROM encounter WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits)
+-- Cleanup after testing (if a migration ran against this data, roll that back
+-- FIRST — see the rollback command below — then run these, child obs before
+-- the parent "Disposition Concept Set" group obs, since obs_group_id is an
+-- RESTRICT foreign key back onto obs itself):
+--   DELETE FROM obs WHERE obs_group_id IS NOT NULL AND encounter_id IN (
+--     SELECT encounter_id FROM (SELECT encounter_id FROM encounter WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits)) x
+--   );
+--   DELETE FROM obs WHERE obs_group_id IS NULL AND encounter_id IN (
+--     SELECT encounter_id FROM (SELECT encounter_id FROM encounter WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits)) x
 --   );
 --   DELETE FROM encounter WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits);
 --   DELETE FROM visit WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits);
 --   DROP TABLE IF EXISTS test_bah5286_bulk_visits;
---   -- Also undo any migration run against this data:
+--   -- Undo any migration run against this data FIRST, before the deletes above:
 --   --   ./data-rollback-legacy-disposition-migration.sh -u <user> -d <db> -b <batch_id>
 -- =============================================================
 
@@ -149,19 +155,25 @@ BEGIN
     SET v_consult_encounter_id = LAST_INSERT_ID();
 
     -- 3. Parent "Disposition Concept Set" group obs (never read by the migration — present for shape-fidelity only)
-    INSERT INTO obs (person_id, concept_id, encounter_id, obs_datetime, location_id, creator, date_created, uuid, voided, comment)
-    VALUES (@person_id, @disposition_set_concept_id, v_consult_encounter_id, v_base_datetime, @location_id, @creator, NOW(), UUID(), v_is_voided, CONCAT('TEST-BAH5286-BULK-', tag));
+    -- NOTE: date_created is backdated to v_base_datetime, not NOW(). The migrate
+    -- script reads the Disposition obs's date_created as date_activated and
+    -- compares it against fulfilling-encounter dates — if date_created were left
+    -- as "now" (the generation time), every fulfilling encounter created "in the
+    -- past" relative to obs_datetime would also be in the past relative to this
+    -- obs's real date_created, breaking the FULFILLED_AFTER > comparison.
+    INSERT INTO obs (person_id, concept_id, encounter_id, obs_datetime, location_id, creator, date_created, uuid, voided, comments)
+    VALUES (@person_id, @disposition_set_concept_id, v_consult_encounter_id, v_base_datetime, @location_id, @creator, v_base_datetime, UUID(), v_is_voided, CONCAT('TEST-BAH5286-BULK-', tag));
     SET v_group_obs_id = LAST_INSERT_ID();
 
     -- 4. Disposition obs (the one the migration reads: concept_id = Disposition, value_coded = answer concept)
-    INSERT INTO obs (person_id, concept_id, encounter_id, obs_group_id, obs_datetime, value_coded, location_id, creator, date_created, uuid, voided, comment)
-    VALUES (@person_id, @disposition_concept_id, v_consult_encounter_id, v_group_obs_id, v_base_datetime, answer_concept_id, @location_id, @creator, NOW(), UUID(), v_is_voided, CONCAT('TEST-BAH5286-BULK-', tag));
+    INSERT INTO obs (person_id, concept_id, encounter_id, obs_group_id, obs_datetime, value_coded, location_id, creator, date_created, uuid, voided, comments)
+    VALUES (@person_id, @disposition_concept_id, v_consult_encounter_id, v_group_obs_id, v_base_datetime, answer_concept_id, @location_id, @creator, v_base_datetime, UUID(), v_is_voided, CONCAT('TEST-BAH5286-BULK-', tag));
     SET v_disposition_obs_id = LAST_INSERT_ID();
 
     -- 5. Sibling Disposition Note obs (optional)
     IF note_mode = 'WITH_NOTE' THEN
-        INSERT INTO obs (person_id, concept_id, encounter_id, obs_group_id, obs_datetime, value_text, location_id, creator, date_created, uuid, voided, comment)
-        VALUES (@person_id, @disposition_note_concept_id, v_consult_encounter_id, v_group_obs_id, v_base_datetime, CONCAT('Bulk test note ', tag), @location_id, @creator, NOW(), UUID(), v_is_voided, CONCAT('TEST-BAH5286-BULK-', tag));
+        INSERT INTO obs (person_id, concept_id, encounter_id, obs_group_id, obs_datetime, value_text, location_id, creator, date_created, uuid, voided, comments)
+        VALUES (@person_id, @disposition_note_concept_id, v_consult_encounter_id, v_group_obs_id, v_base_datetime, CONCAT('Bulk test note ', tag), @location_id, @creator, v_base_datetime, UUID(), v_is_voided, CONCAT('TEST-BAH5286-BULK-', tag));
     END IF;
 
     -- 6. Fulfilling encounter, if this case calls for one

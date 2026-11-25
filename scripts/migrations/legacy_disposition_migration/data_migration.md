@@ -296,7 +296,7 @@ One `orders` row is inserted per eligible Disposition obs:
 | `scheduled_date` | the Disposition obs's `obs_datetime` — this is what the FHIR translator reads back as `occurrencePeriod.start` |
 | `date_activated` | the Disposition obs's `date_created` — read back as `authoredOn`; **not** the migration run time |
 | `comment_to_fulfiller` | the sibling Disposition Note obs's `value_text`, if one exists; `NULL` otherwise |
-| `order_number` | a migration-local `ORD-MIG-<n>` sequence, seeded past any existing `ORD-MIG-*` numbers so re-runs and OpenMRS's own `ORD-<seed>` sequence never collide |
+| `order_number` | `ORD-MIG-<source_obs_id>` — the source obs's own `obs_id` is already globally unique, so no separate counter is needed; this also makes a migrated order's `order_number` trivially traceable back to its source obs, and never collides with OpenMRS's own `ORD-<seed>` sequence |
 | `order_action` | `NEW` |
 | `creator`, `date_created` | the migration run's own values (user `1`, run time) — consistent with how these columns record row-insert provenance elsewhere in OpenMRS; the obs's original author/time is preserved separately via `orderer`/`date_activated` above |
 | `fulfiller_status` | `COMPLETED` **only if** a real fulfilling encounter already happened after the disposition in that visit (see below); `NULL` (open) otherwise |
@@ -518,19 +518,27 @@ table is the authoritative way to find everything).
 
 ### Cleanup
 
-```sql
-DELETE FROM obs WHERE encounter_id IN (
-  SELECT encounter_id FROM encounter WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits)
-);
-DELETE FROM encounter WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits);
-DELETE FROM visit WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits);
-DROP TABLE IF EXISTS test_bah5286_bulk_visits;
-```
-
-If you also ran the migration against this test data, roll that back first
+If you also ran the migration against this test data, roll that back **first**
 (Section 8) — rolling back after deleting the source obs would leave the log
 table referencing obs that no longer exist (harmless, but untidy):
 
 ```bash
 ./data-rollback-legacy-disposition-migration.sh -u <username> -d <dbname> -b <batch_id>
+```
+
+Then delete the generated test rows — **child obs before the parent
+"Disposition Concept Set" group obs**, since `obs_group_id` is a `RESTRICT`
+foreign key back onto `obs` itself (deleting a group obs while its members
+still reference it fails):
+
+```sql
+DELETE FROM obs WHERE obs_group_id IS NOT NULL AND encounter_id IN (
+  SELECT encounter_id FROM (SELECT encounter_id FROM encounter WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits)) x
+);
+DELETE FROM obs WHERE obs_group_id IS NULL AND encounter_id IN (
+  SELECT encounter_id FROM (SELECT encounter_id FROM encounter WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits)) x
+);
+DELETE FROM encounter WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits);
+DELETE FROM visit WHERE visit_id IN (SELECT visit_id FROM test_bah5286_bulk_visits);
+DROP TABLE IF EXISTS test_bah5286_bulk_visits;
 ```
